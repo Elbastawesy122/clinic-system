@@ -27,6 +27,9 @@ export const AboutSection = () => {
 
         {/* Content */}
         <div className="w-full lg:w-1/2 flex flex-col gap-6">
+          <span className="text-[#409D9B] font-bold text-lg uppercase tracking-wide">
+            Eye Care Clinic
+          </span>
 
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight text-center lg:text-left">
             We provide modern eye care with advanced technology.

@@ -5,10 +5,6 @@ export const HeroSection = () => {
     <section className="bg-[#EBFFF5] min-h-screen flex items-center px-6 md:px-16 lg:px-32 py-10">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center w-full">
         <div className="flex flex-col gap-6">
-          <span className="text-[#409D9B] font-bold text-lg uppercase tracking-wide">
-            Eye Care Clinic
-          </span>
-
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
             Where clear vision meets compassionate care.
           </h1>

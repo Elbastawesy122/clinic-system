@@ -14,10 +14,6 @@ export const ServicesSection = () => {
       className="bg-[#EBFFF5] px-6 md:px-16 lg:px-32 py-24"
     >
       <div className="text-center mb-16">
-        <span className="text-[#409D9B] uppercase font-bold tracking-wide">
-          Services
-        </span>
-
         <h2 className="text-4xl font-bold mt-4">
           Our Medical Services
         </h2>

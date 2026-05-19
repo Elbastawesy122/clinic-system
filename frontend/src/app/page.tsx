@@ -1,13 +1,16 @@
-import { AboutSection } from "./Landing Page/Home/AboutSection";
-import { HeroSection } from "./Landing Page/Home/HeroSection";
-import { ServicesSection } from "./Landing Page/Home/ServicesSection";
+import { AboutSection } from "../components/Home/AboutSection";
+import { AppointmentSection } from "../components/Home/AppointmentSection";
+import { HeroSection } from "../components/Home/HeroSection";
+import { ServicesSection } from "../components/Home/ServicesSection";
+
 
 export default function Home() {
   return (
     <>
-      <HeroSection/>
-      <AboutSection/>
-      <ServicesSection/>
+      <HeroSection />
+      <AboutSection />
+      <ServicesSection />
+      <AppointmentSection />
     </>
-  );
+  )
 }

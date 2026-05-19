@@ -2,24 +2,24 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export const Navbar = () => {
     const [open, setOpen] = useState(false);
 
     const links = [
-        { title: "Home", link: "#" },
-        { title: "About", link: "#about" },
-        { title: "Services", link: "#services" },
-        { title: "Contact", link: "#contact" },
+        { title: "Home", link: "/" },
+        { title: "About", link: "/about" },
+        { title: "Services", link: "/services" },
+        { title: "Contact", link: "/contact" },
     ];
 
     return (
         <header
             className="
-        sticky top-0 z-50
+         top-0 z-50
         backdrop-blur-xl
-        bg-white/70
-        border-b border-white/20
+        border-b border-white/20 absolute w-full
       "
         >
             <div
@@ -52,7 +52,7 @@ export const Navbar = () => {
                     >
                         {links.map((item) => (
                             <li key={item.title}>
-                                <a
+                                <Link
                                     href={item.link}
                                     className="
                     relative
@@ -84,7 +84,7 @@ export const Navbar = () => {
                                     <span className="relative z-10">
                                         {item.title}
                                     </span>
-                                </a>
+                                </Link>
                             </li>
                         ))}
                     </ul>
@@ -99,7 +99,7 @@ export const Navbar = () => {
             </div>
 
             {open && (
-                <div className="md:hidden fixed inset-0 z-999]">
+                <div className="md:hidden fixed inset-0 z-999">
 
                     {/* Backdrop */}
                     <div
@@ -108,7 +108,7 @@ export const Navbar = () => {
                     />
                     <div className="absolute top-20 right-6 left-6 bg-white shadow-2xl rounded-2xl p-5 flex flex-col gap-3 animate-in fade-in slide-in-from-top-2">
                         {links.map((item) => (
-                            <a
+                            <Link
                                 key={item.title}
                                 href={item.link}
                                 onClick={() => setOpen(false)}
@@ -124,7 +124,7 @@ export const Navbar = () => {
                                 "
                             >
                                 {item.title}
-                            </a>
+                            </Link>
                         ))}
                     </div>
 
