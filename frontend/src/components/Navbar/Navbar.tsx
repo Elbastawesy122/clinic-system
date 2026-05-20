@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { UserDropdown } from "../Auth/User";
 
 export const Navbar = () => {
     const [open, setOpen] = useState(false);
@@ -23,10 +24,7 @@ export const Navbar = () => {
       "
         >
             <div
-                className="
-          px-6 md:px-16 lg:px-32
-          py-4
-          flex items-center justify-between
+                className="px-6 md:px-16 lg:px-32 py-4 flex items-center justify-between
         "
             >
                 <Image
@@ -38,23 +36,14 @@ export const Navbar = () => {
                     className="object-contain hover:scale-105 transition duration-500"
                 />
 
-                <nav className="hidden md:block">
-                    <ul
-                        className="
-              flex items-center gap-4
-              bg-white/60
-              backdrop-blur-lg
-              border border-[#e8f4f4]
-              shadow-lg
-              rounded-full
-              px-3 py-2
-            "
-                    >
-                        {links.map((item) => (
-                            <li key={item.title}>
-                                <Link
-                                    href={item.link}
-                                    className="
+                <div className="flex items-center justify-between gap-4">
+                    <nav className="hidden md:block">
+                        <ul className="flex items-center gap-4 bg-white/60 backdrop-blur-lg border border-[#e8f4f4] shadow-lg rounded-full px-3 py-2">
+                            {links.map((item) => (
+                                <li key={item.title}>
+                                    <Link
+                                        href={item.link}
+                                        className="
                     relative
                     px-5 py-2.5
                     rounded-full
@@ -67,9 +56,9 @@ export const Navbar = () => {
                     group
                     block
                   "
-                                >
-                                    <span
-                                        className="
+                                    >
+                                        <span
+                                            className="
                       absolute inset-0
                       bg-[#409D9B]
                       scale-x-0
@@ -80,22 +69,24 @@ export const Navbar = () => {
                       rounded-full
                       group-hover:scale-x-100
                     "
-                                    />
-                                    <span className="relative z-10">
-                                        {item.title}
-                                    </span>
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-                </nav>
+                                        />
+                                        <span className="relative z-10">
+                                            {item.title}
+                                        </span>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
 
-                <button
-                    onClick={() => setOpen(!open)}
-                    className="md:hidden text-[#409D9B] text-3xl"
-                >
-                    ☰
-                </button>
+                    <button
+                        onClick={() => setOpen(!open)}
+                        className="md:hidden text-[#409D9B] text-3xl"
+                    >
+                        ☰
+                    </button>
+                    <UserDropdown/>
+                </div>
             </div>
 
             {open && (
