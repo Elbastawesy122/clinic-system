@@ -54,8 +54,11 @@ export const register = async (req: Request, res: Response) => {
       message: "Account created successfully",
     });
   } catch (error) {
-    res.status(500).json({
+    console.log("EMAIL ERROR:", error);
+
+    return res.status(500).json({
       message: "Server Error",
+      error,
     });
   }
 };
@@ -207,7 +210,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
   await user.save();
 
-  const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+  const resetLink = `${process.env.CLIENT_URL}/user/reset-password/${resetToken}`;
 
   await sendMail(
     email,
