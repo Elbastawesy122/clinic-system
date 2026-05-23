@@ -6,22 +6,16 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { ResetPasswordDto } from "@/types/auth.types";
 
-export const useResetPassword =
-  (token: string) => {
-    return useMutation({
-      mutationFn: (data: ResetPasswordDto) =>
-        resetPasswordApi(token, data),
+export const useResetPassword = (token: string) => {
+  return useMutation({
+    mutationFn: (data: ResetPasswordDto) => resetPasswordApi(token, data),
 
-      onSuccess: () => {
-        toast.success(
-          "Password Reset Successfully"
-        );
-      },
+    onSuccess: () => {
+      toast.success("Password Reset Successfully");
+    },
 
-      onError: (err: AxiosError<{ message: string }>) => {
-        toast.error(
-          err.response?.data?.message
-        );
-      },
-    });
-  };
+    onError: (err: AxiosError<{ message: string }>) => {
+      toast.error(err.response?.data?.message);
+    },
+  });
+};

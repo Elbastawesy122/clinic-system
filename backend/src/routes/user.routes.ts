@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import {
+  getAllUsers,
   getUserById,
   updateUser,
   deleteUser,
@@ -9,6 +10,8 @@ import {
 import { protect } from "../middlewares/protect";
 
 const router = Router();
+
+router.get("/", protect, getAllUsers);
 
 router.get("/:id", protect, getUserById);
 

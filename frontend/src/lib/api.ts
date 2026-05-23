@@ -6,14 +6,38 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
-  const token =
-    useAuthStore.getState().accessToken;
+api.interceptors.response.use(
+  (res) => res,
 
-  if (token) {
-    config.headers.Authorization =
-      `Bearer ${token}`;
-  }
+  async (error) => {
+    const originalRequest = error.config;
 
-  return config;
-});
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const res = await axios.post(
+          "http://localhost:5000/api/auth/refresh-token",
+          {},
+          {
+            withCredentials: true,
+          },
+        );
+
+        const newToken = res.data.accessToken;
+
+        useAuthStore.getState().setAccessToken(newToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+        return api(originalRequest);
+      } catch (err) {
+        useAuthStore.getState().logout();
+
+        window.location.href = "/login";
+      }
+    }
+
+    return Promise.reject(error);
+  },
+);

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { UserDropdown } from "../Auth/User";
+import { UserDropdown } from "../User/User";
 
 export const Navbar = () => {
     const [open, setOpen] = useState(false);
@@ -18,9 +18,9 @@ export const Navbar = () => {
     return (
         <header
             className="
-         top-0 z-50
+         z-50
         backdrop-blur-xl
-        border-b border-white/20 absolute w-full
+        border-b border-white/20 w-full
       "
         >
             <div

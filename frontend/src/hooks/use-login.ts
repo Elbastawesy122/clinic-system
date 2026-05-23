@@ -5,8 +5,11 @@ import { loginApi } from "@/api/auth";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/auth-store";
 import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 
 export const useLogin = () => {
+ 
+  const router = useRouter();
   const setToken =
     useAuthStore((s) => s.setAccessToken);
 
@@ -20,7 +23,7 @@ export const useLogin = () => {
       setToken(res.data.accessToken);
 
       setUser(res.data.user);
-
+      router.push("/");
       toast.success("Login Success");
     },
 

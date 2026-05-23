@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export const HeroSection = () => {
   return (
-    <section className="bg-[#EBFFF5] min-h-screen flex items-center px-6 md:px-16 lg:px-32 py-10">
+    <section className="bg-[#EBFFF5] min-h-[calc(100vh-90px)] flex items-center px-6 md:px-16 lg:px-32 py-10">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center w-full">
         <div className="flex flex-col gap-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">

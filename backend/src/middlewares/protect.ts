@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
+import { AuthRequest } from "../types/auth-request";
 
 import jwt from "jsonwebtoken";
 
@@ -9,7 +10,7 @@ interface JwtPayload {
 }
 
 export const protect = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction,
 ) => {

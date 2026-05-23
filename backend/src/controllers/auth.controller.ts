@@ -1,18 +1,17 @@
 import { Request, Response } from "express";
-
 import bcrypt from "bcryptjs";
-
 import crypto from "crypto";
-
 import { User } from "../models/user.model";
-
 import { generateOTP } from "../utils/generateOTP";
-
 import { sendMail } from "../utils/sendMail";
-
 import { generateAccessToken } from "../utils/generateAccessToken";
-
 import { generateRefreshToken } from "../utils/generateRefreshToken";
+import jwt from "jsonwebtoken";
+
+
+interface JwtPayload {
+  id: string;
+}
 
 // REGISTER
 export const register = async (req: Request, res: Response) => {
@@ -147,46 +146,60 @@ export const login = async (req: Request, res: Response) => {
 
 // REFRESH TOKEN
 export const refreshToken = async (req: Request, res: Response) => {
-  const token = req.cookies.refreshToken;
+  try {
+    const token = req.cookies.refreshToken;
 
-  if (!token) {
-    return res.status(401).json({
-      message: "No refresh token",
+    if (!token) {
+      return res.status(401).json({
+        message: "No refresh token",
+      });
+    }
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_REFRESH_SECRET!,
+    ) as JwtPayload;
+
+    const user = await User.findById(decoded.id);
+
+    if (!user || user.refreshToken !== token) {
+      return res.status(401).json({
+        message: "Invalid refresh token",
+      });
+    }
+
+    const newAccessToken = generateAccessToken(user._id.toString());
+
+    res.status(200).json({
+      accessToken: newAccessToken,
+    });
+  } catch (error) {
+    res.status(401).json({
+      message: "Refresh token expired",
     });
   }
-
-  const user = await User.findOne({
-    refreshToken: token,
-  });
-
-  if (!user) {
-    return res.status(401).json({
-      message: "Invalid refresh token",
-    });
-  }
-
-  const accessToken = generateAccessToken(user._id.toString());
-
-  res.json({
-    accessToken,
-  });
 };
 
 // LOGOUT
 export const logout = async (req: Request, res: Response) => {
   const token = req.cookies.refreshToken;
 
-  await User.findOneAndUpdate(
-    { refreshToken: token },
-    {
-      refreshToken: null,
-    },
-  );
+  if (token) {
+    const user = await User.findOne({
+      refreshToken: token,
+    });
+
+    if (user) {
+      user.refreshToken = "";
+
+      await user.save();
+    }
+  }
 
   res.clearCookie("refreshToken");
 
-  res.json({
-    message: "Logged out successfully",
+  res.status(200).json({
+    message: "Logged out",
   });
 };
 
@@ -214,12 +227,93 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
   await sendMail(
     email,
-    "Reset Password",
+    "Reset Your Password",
     `
-        <a href="${resetLink}">
+    <div style="
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 40px 30px;
+      background: #f8fafc;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+    ">
+
+      <h1 style="
+        color: #0f172a;
+        margin-bottom: 20px;
+        text-align: center;
+      ">
+        Reset Your Password
+      </h1>
+
+      <p style="
+        color: #475569;
+        font-size: 16px;
+        line-height: 28px;
+      ">
+        Hello,
+      </p>
+
+      <p style="
+        color: #475569;
+        font-size: 16px;
+        line-height: 28px;
+      ">
+        We received a request to reset your password for your account.
+        Click the button below to create a new password.
+      </p>
+
+      <div style="text-align: center; margin: 35px 0;">
+        <a
+          href="${resetLink}"
+          style="
+            background: #409D9B;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            font-size: 16px;
+          "
+        >
           Reset Password
         </a>
-      `,
+      </div>
+
+      <p style="
+        color: #64748b;
+        font-size: 14px;
+        line-height: 26px;
+      ">
+        This password reset link will expire in 10 minutes.
+      </p>
+
+      <p style="
+        color: #64748b;
+        font-size: 14px;
+        line-height: 26px;
+      ">
+        If you did not request a password reset, you can safely ignore this email.
+      </p>
+
+      <hr style="
+        margin: 30px 0;
+        border: none;
+        border-top: 1px solid #e2e8f0;
+      " />
+
+      <p style="
+        text-align: center;
+        color: #94a3b8;
+        font-size: 13px;
+      ">
+        Eye Care Clinic © 2026
+      </p>
+
+    </div>
+  `,
   );
 
   res.json({
