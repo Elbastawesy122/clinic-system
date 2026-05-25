@@ -23,7 +23,7 @@ export const useLogin = () => {
       setToken(res.data.accessToken);
 
       setUser(res.data.user);
-      router.push("/");
+      router.push("/dashboard");
       toast.success("Login Success");
     },
 

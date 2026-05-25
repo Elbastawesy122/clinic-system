@@ -12,6 +12,7 @@ import mongoSanitize from "express-mongo-sanitize";
 
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
+import appointmentRoutes from "./routes/appointment.routes";
 
 dotenv.config();
 
@@ -34,5 +35,6 @@ app.use(helmet());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/appointments", appointmentRoutes);
 
 export default app;
