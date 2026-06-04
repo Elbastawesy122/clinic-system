@@ -12,23 +12,16 @@ import {
 
 import { validate } from "../middlewares/validate.middleware";
 
-import {
-  registerValidation,
-  loginValidation,
-  otpValidation,
-  forgotPasswordValidation,
-  resetPasswordValidation,
-} from "../validations/auth.validation";
-
 import { authLimiter } from "../middlewares/rateLimit.middleware";
+import { forgotPasswordSchema, loginSchema, registerSchema, resetPasswordSchema, verifyEmailSchema } from "../validations/auth.validation";
 
 const router = Router();
 
-router.post("/register", authLimiter, validate(registerValidation), register);
+router.post("/register", authLimiter, validate(registerSchema), register);
 
-router.post("/verify-email", validate(otpValidation), verifyEmail);
+router.post("/verify-email", validate(verifyEmailSchema), verifyEmail);
 
-router.post("/login", authLimiter, validate(loginValidation), login);
+router.post("/login", authLimiter, validate(loginSchema), login);
 
 router.post("/refresh-token", refreshToken);
 
@@ -36,13 +29,13 @@ router.post("/logout", logout);
 
 router.post(
   "/forgot-password",
-  validate(forgotPasswordValidation),
+  validate(forgotPasswordSchema),
   forgotPassword,
 );
 
 router.post(
   "/reset-password/:token",
-  validate(resetPasswordValidation),
+  validate(resetPasswordSchema),
   resetPassword,
 );
 

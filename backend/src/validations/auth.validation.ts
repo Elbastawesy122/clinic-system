@@ -1,29 +1,55 @@
 import Joi from "joi";
 
-export const registerValidation = Joi.object({
-  name: Joi.string().min(3).required(),
+export const registerSchema = Joi.object({
+  name: Joi.string().trim().min(3).max(50).required().messages({
+    "string.empty": "Name is required",
+    "string.min": "Name must be at least 3 characters",
+    "string.max": "Name must not exceed 50 characters",
+  }),
 
-  email: Joi.string().email().required(),
+  email: Joi.string().trim().lowercase().email().required().messages({
+    "string.email": "Invalid email format",
+    "string.empty": "Email is required",
+  }),
 
-  password: Joi.string().min(6).required(),
+  password: Joi.string().min(6).max(100).required().messages({
+    "string.min": "Password must be at least 6 characters",
+    "string.empty": "Password is required",
+  }),
+
+  phone: Joi.string()
+    .pattern(/^01[0125][0-9]{8}$/)
+    .optional()
+    .messages({
+      "string.pattern.base": "Invalid Egyptian phone number",
+    }),
 });
 
-export const loginValidation = Joi.object({
-  email: Joi.string().email().required(),
+export const loginSchema = Joi.object({
+  email: Joi.string().trim().lowercase().email().required(),
 
   password: Joi.string().required(),
 });
 
-export const otpValidation = Joi.object({
-  email: Joi.string().email().required(),
+export const verifyEmailSchema = Joi.object({
+  email: Joi.string().trim().lowercase().email().required(),
 
-  otp: Joi.string().required(),
+  otp: Joi.string()
+    .length(6)
+    .pattern(/^[0-9]{6}$/)
+    .required()
+    .messages({
+      "string.length": "OTP must be 6 digits",
+      "string.pattern.base": "OTP must contain only numbers",
+    }),
 });
 
-export const forgotPasswordValidation = Joi.object({
-  email: Joi.string().email().required(),
+export const forgotPasswordSchema = Joi.object({
+  email: Joi.string().trim().lowercase().email().required(),
 });
 
-export const resetPasswordValidation = Joi.object({
-  password: Joi.string().min(6).required(),
+export const resetPasswordSchema = Joi.object({
+  password: Joi.string().min(6).max(100).required().messages({
+    "string.min": "Password must be at least 6 characters",
+  }),
 });

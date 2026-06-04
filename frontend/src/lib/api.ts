@@ -6,6 +6,16 @@ export const api = axios.create({
   withCredentials: true,
 });
 
+api.interceptors.request.use((config) => {
+  const token = useAuthStore.getState().accessToken;  
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
 api.interceptors.response.use(
   (res) => res,
 
@@ -34,7 +44,7 @@ api.interceptors.response.use(
       } catch (err) {
         useAuthStore.getState().logout();
 
-        window.location.href = "/login";
+        window.location.href = "/user/login";
       }
     }
 

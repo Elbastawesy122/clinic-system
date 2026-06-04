@@ -8,7 +8,6 @@ import { generateAccessToken } from "../utils/generateAccessToken";
 import { generateRefreshToken } from "../utils/generateRefreshToken";
 import jwt from "jsonwebtoken";
 
-
 interface JwtPayload {
   id: string;
 }
@@ -16,7 +15,7 @@ interface JwtPayload {
 // REGISTER
 export const register = async (req: Request, res: Response) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, phone, image, password } = req.body;
 
     const existUser = await User.findOne({ email });
 
@@ -33,6 +32,8 @@ export const register = async (req: Request, res: Response) => {
     const user = await User.create({
       name,
       email,
+      phone,
+      image,
       password: hashedPassword,
 
       verificationOTP: otp,
@@ -89,6 +90,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
   user.isVerified = true;
 
   user.verificationOTP = undefined;
+  user.verificationOTPExpire = undefined;
 
   await user.save();
 
@@ -123,6 +125,12 @@ export const login = async (req: Request, res: Response) => {
     });
   }
 
+  if (user.isBlocked) {
+    return res.status(403).json({
+      message: "Your account has been blocked",
+    });
+  }
+
   const accessToken = generateAccessToken(user._id.toString());
 
   const refreshToken = generateRefreshToken(user._id.toString());
@@ -133,14 +141,18 @@ export const login = async (req: Request, res: Response) => {
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
+  const userData = await User.findById(user._id).select(
+    "-password -refreshToken",
+  );
+
   res.json({
     accessToken,
-    user,
+    user: userData,
   });
 };
 
@@ -348,6 +360,8 @@ export const resetPassword = async (req: Request, res: Response) => {
   user.password = hashedPassword;
 
   user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  user.refreshToken = undefined;
 
   await user.save();
 

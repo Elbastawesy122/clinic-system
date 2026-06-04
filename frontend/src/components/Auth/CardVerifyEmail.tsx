@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { verifyEmailSchema } from "@/schemas/auth.schema";
 import z from "zod";
-import { useVerifyEmail } from "@/hooks/use-verify-email";
+import { useVerifyEmail } from "@/hooks/auth/use-verify-email";
 type FormData = z.infer<typeof verifyEmailSchema>;
 export function CardVerifyEmail() {
 

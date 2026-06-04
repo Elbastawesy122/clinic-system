@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 
 import { Label } from "@/components/ui/label";
 
-import { useResetPassword } from "@/hooks/use-reset-password";
+import { useResetPassword } from "@/hooks/auth/use-reset-password";
 
 import { resetPasswordSchema } from "@/schemas/auth.schema";
 

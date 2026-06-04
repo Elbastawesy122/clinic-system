@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRegister } from "@/hooks/use-register";
+import { useRegister } from "@/hooks/auth/use-register";
 
 type FormData = z.infer<typeof registerSchema>
 
@@ -53,20 +53,41 @@ export function CardRegister() {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
-          <div className="space-y-2">
-            <Label className="text-[#409D9B] font-bold">Name</Label>
+          <div className="flex justify-between items-center gap-4">
+            <div className="space-y-2 w-1/2">
+              <Label className="text-[#409D9B] font-bold">Name</Label>
 
-            <Input
-              placeholder="Ahmed"
-              className="h-12 rounded-xl border-2 border-[#409D9B] outline-none"
-              {...register("name")}
-            />
+              <Input
+                placeholder="Ahmed"
+                className="h-12 rounded-xl border-2 border-[#409D9B] outline-none"
+                {...register("name")}
+              />
 
-            {errors.name && (
-              <p className="text-red-500 text-sm">
-                {errors.name.message}
-              </p>
-            )}
+              {errors.name && (
+                <p className="text-red-500 text-sm">
+                  {errors.name.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2 w-1/2">
+              <Label className="font-bold text-[#409D9B]">
+                Phone Number
+              </Label>
+
+              <Input
+                type="tel"
+                placeholder="+201000000000"
+                className="h-12 rounded-xl border-2 border-[#409D9B]"
+                {...register("phone")}
+              />
+
+              {errors.phone && (
+                <p className="text-sm text-red-500">
+                  {errors.phone.message}
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -91,6 +112,7 @@ export function CardRegister() {
 
             <Input
               type="password"
+              placeholder="********"
               className="h-12 rounded-xl border-2 border-[#409D9B] outline-none"
               {...register("password")}
             />

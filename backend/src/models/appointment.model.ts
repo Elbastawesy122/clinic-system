@@ -1,12 +1,13 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 export interface IAppointment extends mongoose.Document {
-  patient: mongoose.Types.ObjectId;
-  doctor: string;
-  clinic: string;
-  date: string;
-  time: string;
-  status: "Pending" | "Confirmed" | "Cancelled";
+  patient: Types.ObjectId;
+  doctor: Types.ObjectId;
+  clinic: Types.ObjectId;
+  appointmentDate: Date;
+  timeSlot: string;
+  status: "pending" | "confirmed" | "completed" | "cancelled";
+  notes?: string;
 }
 
 const appointmentSchema = new mongoose.Schema<IAppointment>(
@@ -17,27 +18,29 @@ const appointmentSchema = new mongoose.Schema<IAppointment>(
       required: true,
     },
     doctor: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Doctor",
       required: true,
     },
     clinic: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Clinic",
       required: true,
     },
-    date: {
-      type: String,
+    appointmentDate: {
+      type: Date,
       required: true,
     },
-    time: {
+    timeSlot: {
       type: String,
-
       required: true,
     },
     status: {
       type: String,
-      enum: ["Pending", "Confirmed", "Cancelled"],
-      default: "Pending",
+      enum: ["pending", "confirmed", "completed", "cancelled"],
+      default: "pending",
     },
+    notes: String,
   },
   {
     timestamps: true,

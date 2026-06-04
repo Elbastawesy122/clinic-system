@@ -9,7 +9,7 @@ import { DashboardCard } from "@/components/Dashboard/DashboardCard";
 
 import { DashboardCharts } from "@/components/Dashboard/DashboardCharts";
 
-import { RecentAppointments } from "@/components/Dashboard/RecentAppointments";
+import { RecentAppointments } from "@/components/Dashboard/Appointment/RecentAppointments";
 
 export default function DashboardPage() {
     return (

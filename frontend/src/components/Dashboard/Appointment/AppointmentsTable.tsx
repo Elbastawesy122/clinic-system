@@ -4,6 +4,7 @@ import {
     ColumnDef,
     flexRender,
     getCoreRowModel,
+    getPaginationRowModel,
     useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -14,6 +15,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 interface Props<TData, TValue> {
     columns:
     ColumnDef<TData, TValue>[];
@@ -32,7 +34,10 @@ export function AppointmentsTable
             columns,
             getCoreRowModel:
                 getCoreRowModel(),
+            getPaginationRowModel:
+                getPaginationRowModel(),
         });
+
 
     return (
         <div className="rounded-3xl border bg-white overflow-hidden">
@@ -87,6 +92,21 @@ export function AppointmentsTable
                     )}
                 </TableBody>
             </Table>
+            <Button
+                onClick={() =>
+                    table.previousPage()
+                }
+            >
+                Previous
+            </Button>
+
+            <Button
+                onClick={() =>
+                    table.nextPage()
+                }
+            >
+                Next
+            </Button>
         </div>
     );
 }

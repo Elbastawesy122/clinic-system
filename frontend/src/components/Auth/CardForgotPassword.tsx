@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { Label } from "@/components/ui/label";
-import { useForgotPassword } from "@/hooks/use-forgot-password";
+import { useForgotPassword } from "@/hooks/auth/use-forgot-password";
 import { emailSchema } from "@/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
