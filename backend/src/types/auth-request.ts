@@ -6,4 +6,5 @@ export interface AuthRequest
   extends Request {
 
   user?: IUser;
+  file?: Express.Multer.File;
 }

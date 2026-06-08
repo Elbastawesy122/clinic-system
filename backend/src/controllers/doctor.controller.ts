@@ -118,13 +118,65 @@ export const createDoctor = async (req: Request, res: Response) => {
 
 export const getDoctors = async (req: Request, res: Response) => {
   try {
-    const doctors = await Doctor.find()
-      .populate("user", "name email")
-      .populate("clinic", "name");
+    const page = Number(req.query.page) || 1;
+    const limit = 6;
+    const search = (req.query.search as string) || "";
 
-    res.status(200).json(doctors);
+    const skip = (page - 1) * limit;
+
+    const matchStage: any = {};
+
+    if (search) {
+      matchStage["user.name"] = {
+        $regex: search,
+        $options: "i",
+      };
+    }
+
+    const doctors = await Doctor.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $lookup: {
+          from: "clinics",
+          localField: "clinic",
+          foreignField: "_id",
+          as: "clinic",
+        },
+      },
+      { $unwind: "$clinic" },
+
+      {
+        $match: matchStage,
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+    ]);
+
+    const totalDoctors = await Doctor.countDocuments(search ? {} : {});
+
+    return res.status(200).json({
+      doctors,
+      totalDoctors,
+      totalPages: Math.ceil(totalDoctors / limit),
+      currentPage: page,
+    });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Server Error",
     });
   }

@@ -6,45 +6,66 @@ export const api = axios.create({
   withCredentials: true,
 });
 
+/*
+|--------------------------------------------------------------------------
+| Request Interceptor
+|--------------------------------------------------------------------------
+*/
 api.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().accessToken;  
+  const token = useAuthStore.getState().accessToken;
 
   if (token) {
+    config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
   }
 
   return config;
 });
 
+/*
+|--------------------------------------------------------------------------
+| Response Interceptor (Refresh Token Logic)
+|--------------------------------------------------------------------------
+*/
 api.interceptors.response.use(
   (res) => res,
 
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // لو مفيش response أو request مش موجود
+    if (!error.response || !originalRequest) {
+      return Promise.reject(error);
+    }
+
+    // منع loop
+    if (originalRequest._retry) {
+      return Promise.reject(error);
+    }
+
+    // لو Unauthorized
+    if (error.response.status === 401) {
       originalRequest._retry = true;
 
       try {
-        const res = await axios.post(
-          "http://localhost:5000/api/auth/refresh-token",
-          {},
-          {
-            withCredentials: true,
-          },
-        );
+        const res = await axios.post("http://localhost:5000/api/auth/refresh-token", {}, { withCredentials: true });
 
         const newToken = res.data.accessToken;
 
         useAuthStore.getState().setAccessToken(newToken);
 
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        // إعادة إضافة التوكن
+        originalRequest.headers = {
+          ...originalRequest.headers,
+          Authorization: `Bearer ${newToken}`,
+        };
 
+        // 🔥 مهم: إعادة الطلب بشكل آمن
         return api(originalRequest);
       } catch (err) {
         useAuthStore.getState().logout();
-
         window.location.href = "/user/login";
+        return Promise.reject(err);
       }
     }
 

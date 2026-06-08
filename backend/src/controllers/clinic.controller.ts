@@ -22,7 +22,7 @@ export const createClinic = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-    
+
     res.status(500).json({
       message: "Server Error",
     });
@@ -31,11 +31,27 @@ export const createClinic = async (req: Request, res: Response) => {
 
 export const getClinics = async (req: Request, res: Response) => {
   try {
-    const clinics = await Clinic.find();
+    const search = (req.query.search as string) || "";
 
-    res.status(200).json(clinics);
+    const filter = search
+      ? {
+          name: {
+            $regex: search,
+            $options: "i",
+          },
+        }
+      : {};
+
+    const totalClinics = await Clinic.countDocuments(filter);
+
+    const clinics = await Clinic.find(filter).sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      clinics,
+      totalClinics,
+    });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Server Error",
     });
   }

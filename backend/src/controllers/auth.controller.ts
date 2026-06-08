@@ -7,10 +7,82 @@ import { sendMail } from "../utils/sendMail";
 import { generateAccessToken } from "../utils/generateAccessToken";
 import { generateRefreshToken } from "../utils/generateRefreshToken";
 import jwt from "jsonwebtoken";
+import { AuthRequest } from "../types/auth-request";
 
 interface JwtPayload {
   id: string;
 }
+
+export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const user = await User.findById(req.user?._id).select(
+      "-password -refreshToken",
+    );
+
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error("Get Me Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+export const updateMe = async (
+  req: AuthRequest,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { name, phone, image } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      req.user?._id,
+      {
+        ...(name && { name }),
+        ...(phone && { phone }),
+        ...(image && { image }),
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    ).select("-password -refreshToken");
+
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user,
+    });
+  } catch (error) {
+    console.error("Update Me Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
 
 // REGISTER
 export const register = async (req: Request, res: Response) => {

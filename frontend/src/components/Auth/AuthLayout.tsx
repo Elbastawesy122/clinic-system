@@ -6,7 +6,7 @@ export const AuthLayout = ({
     children: React.ReactNode;
 }) => {
     return (
-        <section className="h-screen flex items-center justify-center bg-[#EBFFF5] px-6 py-15 relative overflow-hidden">
+        <section className="min-h-screen flex items-center justify-center bg-[#EBFFF5] px-6 py-15 relative overflow-hidden">
             <div className="relative z-10 w-full max-w-6xl bg-white rounded-[40px] shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
                 {/* Left */}
                 <div className="hidden lg:flex bg-[#409D9B] text-white p-16 flex-col justify-between relative overflow-hidden">

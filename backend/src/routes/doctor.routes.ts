@@ -20,23 +20,21 @@ import {
 
 const router = Router();
 
-router.get("/", protect, getDoctors);
-router.get("/:id", protect, getDoctorById);
-router.post(
-  "/",
-  protect,
-  authorize("admin"),
-  validate(createDoctorSchema),
-  createDoctor,
-);
-router.put(
-  "/:id",
-  protect,
-  authorize("admin"),
-  validate(updateDoctorSchema),
-  updateDoctor,
-);
-router.delete("/:id", protect, authorize("admin"), deleteDoctor);
+router
+  .route("/")
+  .get(protect, getDoctors)
+  .post(
+    protect,
+    authorize("admin"),
+    validate(createDoctorSchema),
+    createDoctor,
+  );
+
+router
+  .route("/:id")
+  .get(protect, getDoctorById)
+  .put(protect, authorize("admin"), validate(updateDoctorSchema), updateDoctor)
+  .delete(protect, authorize("admin"), deleteDoctor);
 router.post("/setup-password/:token", setupDoctorPassword);
 
 export default router;

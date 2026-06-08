@@ -1,6 +1,6 @@
 import { api } from "@/lib/api";
 
-import { ForgotPasswordDto, LoginDto, RegisterDto, ResetPasswordDto, VerifyEmailDto } from "@/types/auth.types";
+import { AuthResponse, ForgotPasswordDto, LoginDto, RegisterDto, ResetPasswordDto, VerifyEmailDto } from "@/types/auth.types";
 
 export const registerApi = (data: RegisterDto) => api.post("/auth/register", data);
 
@@ -14,4 +14,7 @@ export const resetPasswordApi = (token: string, data: ResetPasswordDto) => api.p
 
 export const logoutApi = () => api.post("/auth/logout");
 
-export const meApi = () => api.get("/auth/me");
+export const meApi = async (): Promise<AuthResponse> => {
+  const response = await api.get<AuthResponse>("/auth/me");
+  return response.data;
+};

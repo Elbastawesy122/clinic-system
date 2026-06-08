@@ -13,6 +13,7 @@ import { protect } from "../middlewares/protect";
 import { authorize } from "../middlewares/authorize";
 import { validate } from "../middlewares/validate.middleware";
 import { updateUserSchema } from "../validations/user.validation";
+import { upload } from "../middlewares/upload.middleware";
 
 const router = Router();
 
@@ -38,6 +39,6 @@ router.patch("/unblock/:id", protect, authorize("admin"), unblockUser);
 
 router.get("/:id", protect, getUserById);
 
-router.put("/:id", protect, validate(updateUserSchema), updateUser);
+router.put("/:id", protect, upload.single("image"), updateUser);
 
 export default router;

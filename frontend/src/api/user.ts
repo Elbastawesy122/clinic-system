@@ -2,10 +2,7 @@ import { api } from "@/lib/api";
 
 export const updateUserApi = (
   id: string,
-  data: {
-    name: string;
-    email: string;
-  },
-) => api.put(`/users/${id}`, data);
+  formData: FormData
+) => api.put(`/users/${id}`, formData);
 
 export const deleteUserApi = (id: string) => api.delete(`/users/${id}`);

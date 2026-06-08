@@ -1,8 +1,7 @@
 import { api } from "@/lib/api";
-
 import { DoctorDto } from "@/types/doctor.types";
 
-export const getDoctorsApi = () => api.get("/dashboard/doctors");
+export const getDoctorsApi = (page: number, search: string) => api.get(`/dashboard/doctors?page=${page}&search=${search}`);
 
 export const getDoctorApi = (id: string) => api.get(`/dashboard/doctors/${id}`);
 

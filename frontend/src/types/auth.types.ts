@@ -1,3 +1,5 @@
+import { User } from "@/store/auth-store";
+
 export interface LoginDto {
   email: string;
   password: string;
@@ -20,4 +22,10 @@ export interface ForgotPasswordDto {
 
 export interface ResetPasswordDto {
   password: string;
+}
+
+export interface AuthResponse {
+  message: string;
+  accessToken: string;
+  user: User;
 }

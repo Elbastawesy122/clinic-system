@@ -16,7 +16,7 @@ dotenv.config();
 const app = express();
 
 app.use(helmet());
-app.use(mongoSanitize());
+// app.use(mongoSanitize());
 
 app.use(express.json());
 app.use(cookieParser());
@@ -28,7 +28,7 @@ app.use(
   }),
 );
 
-app.use("/api/auth", authLimiter);
+// app.use("/api/auth", authLimiter);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);

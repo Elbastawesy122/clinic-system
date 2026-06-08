@@ -10,29 +10,63 @@ import {
     SheetHeader,
     SheetTitle,
     SheetTrigger,
-    SheetClose,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Settings } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useUpdateUser } from "@/hooks/use-update-user";
 import { useDeleteUser } from "@/hooks/use-delete-user";
+import Image from "next/image";
 
 export const UserSettingsSheet = () => {
 
     const user = useAuthStore((s) => s.user);
     const [name, setName] = useState(user?.name || "");
     const [email, setEmail] = useState(user?.email || "");
+    const [phone, setphone] = useState(user?.phone || "");
     const updateMutation = useUpdateUser();
     const deleteMutation = useDeleteUser();
 
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+    const [image, setImage] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string>("");
+
+    const handleClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+
+        if (file) {
+            setImage(file);
+            setPreview(URL.createObjectURL(file));
+        }
+    };
+
     if (!user) return null;
 
+    const imageSrc = user.image || preview || "/default-avatar.png";
+
     const handleUpdate = () => {
-        updateMutation.mutate({ id: user._id, data: { name, email }, })
+        const formData = new FormData();
+
+        formData.append("name", name);
+        formData.append("email", email);
+        formData.append("phone", phone);
+
+        if (image) {
+            formData.append("image", image);
+        }
+
+        updateMutation.mutate({
+            id: user._id,
+            data: formData,
+        });
     };
 
     const handleDelete = () => {
@@ -44,7 +78,7 @@ export const UserSettingsSheet = () => {
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <button className="flex items-center gap-2 w-full rounded-xl h-11 px-2 text-sm hover:bg-accent transition">
+                <button className="flex items-center gap-2 w-full rounded-xl h-11 px-2 text-sm hover:bg-accent transition cursor-pointer">
                     <Settings className="size-4" />
                     Settings
                 </button>
@@ -59,7 +93,39 @@ export const UserSettingsSheet = () => {
                         information.
                     </SheetDescription>
                 </SheetHeader>
-                <div className="grid gap-6 p-8">
+                <div className="grid gap-6 px-8">
+
+                    <div className="flex justify-center items-center gap-4">
+                        <div className="relative flex items-center justify-center">
+                            {imageSrc ? (
+                                <Image
+                                    src={imageSrc}
+                                    alt={user.name}
+                                    width={0}
+                                    height={0}
+                                    sizes="100vw"
+                                    className="w-24 h-24 rounded-full object-cover border"
+                                />
+                            ) : (
+                                <div className="size-12 rounded-full bg-[#409D9B] flex items-center justify-center text-white font-bold text-lg">
+                                    {user.name.charAt(0).toUpperCase()}
+                                </div>
+                            )}
+                            <button
+                                onClick={handleClick}
+                                className="absolute bottom-0 right-0 bg-[#409D9B] text-white text-xs px-2 py-1 rounded-full"
+                            >
+                                Edit
+                            </button>
+                            <Input
+                                type="file"
+                                accept="image/*"
+                                ref={fileInputRef}
+                                onChange={handleChange}
+                                className="hidden"
+                            />
+                        </div>
+                    </div>
                     <div className="grid gap-2">
                         <Label>Name</Label>
                         <Input
@@ -76,6 +142,16 @@ export const UserSettingsSheet = () => {
                             value={email}
                             onChange={(e) =>
                                 setEmail(e.target.value)
+                            }
+                            className="focus-visible:ring-0 focus-visible:ring-offset-0"
+                        />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label>Phone</Label>
+                        <Input
+                            value={phone}
+                            onChange={(e) =>
+                                setphone(e.target.value)
                             }
                             className="focus-visible:ring-0 focus-visible:ring-offset-0"
                         />
@@ -98,13 +174,13 @@ export const UserSettingsSheet = () => {
                     </Button>
                 </div>
                 <SheetFooter>
-                    <SheetClose asChild>
+                    {/* <SheetClose asChild>
                         <Button
                             variant="outline"
                         >
                             Close
                         </Button>
-                    </SheetClose>
+                    </SheetClose> */}
                     <Button
                         onClick={handleUpdate}
                         disabled={updateMutation.isPending}

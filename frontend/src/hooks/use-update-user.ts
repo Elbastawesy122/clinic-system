@@ -10,13 +10,7 @@ export const useUpdateUser = () => {
   const setUser = useAuthStore((s) => s.setUser);
 
   return useMutation({
-    mutationFn: ({id , data}: {
-      id: string; 
-      data: {
-        name: string;
-        email: string;
-      };
-    }) => updateUserApi(id, data),
+    mutationFn: ({ id, data }: { id: string; data: FormData }) => updateUserApi(id, data),
 
     onSuccess: (res) => {
       setUser(res.data.user);

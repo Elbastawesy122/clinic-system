@@ -53,3 +53,32 @@ export const resetPasswordSchema = Joi.object({
     "string.min": "Password must be at least 6 characters",
   }),
 });
+
+export const updateMeSchema = Joi.object({
+  name: Joi.string().trim().min(3).max(50),
+
+  phone: Joi.string()
+    .trim()
+    .pattern(/^01[0125][0-9]{8}$/)
+    .messages({
+      "string.pattern.base": "Invalid Egyptian phone number",
+    }),
+
+  image: Joi.string().trim().uri(),
+
+  email: Joi.forbidden(),
+  password: Joi.forbidden(),
+  role: Joi.forbidden(),
+  isVerified: Joi.forbidden(),
+  isBlocked: Joi.forbidden(),
+  refreshToken: Joi.forbidden(),
+  verificationOTP: Joi.forbidden(),
+  verificationOTPExpire: Joi.forbidden(),
+  resetPasswordToken: Joi.forbidden(),
+  resetPasswordExpire: Joi.forbidden(),
+})
+  .min(1)
+  .options({
+    abortEarly: false,
+    stripUnknown: true,
+  });

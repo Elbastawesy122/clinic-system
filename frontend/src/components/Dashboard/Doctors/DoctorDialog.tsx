@@ -1,7 +1,5 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
     Dialog,
     DialogContent,
@@ -9,54 +7,31 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 
-interface Props {
-    open: boolean;
-    setOpen: (
-        value: boolean
-    ) => void;
-}
+import { DoctorForm } from "./DoctorForm";
+import { Doctor } from "@/types/doctor.types";
 
 export function DoctorDialog({
     open,
     setOpen,
-}: Props) {
+    doctor,
+}: {
+    open: boolean;
+    setOpen: (v: boolean) => void;
+    doctor?: Doctor | null;
+}) {
     return (
-        <Dialog
-            open={open}
-            onOpenChange={setOpen}
-        >
-            <DialogContent>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>
-                        Add Doctor
+                        {doctor ? "Edit Doctor" : "Create Doctor"}
                     </DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4">
-                    <div>
-                        <Label>
-                            Name
-                        </Label>
-                        <Input />
-                    </div>
-                    <div>
-                        <Label>
-                            Email
-                        </Label>
-                        <Input />
-                    </div>
-                    <div>
-                        <Label>
-                            Phone
-                        </Label>
-                        <Input />
-                    </div>
-                    <div>
-                        <Label>
-                            Specialization
-                        </Label>
-                        <Input />
-                    </div>
-                </div>
+
+                <DoctorForm
+                    doctor={doctor}
+                    onClose={() => setOpen(false)}
+                />
             </DialogContent>
         </Dialog>
     );

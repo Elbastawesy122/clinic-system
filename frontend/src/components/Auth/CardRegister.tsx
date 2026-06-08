@@ -77,7 +77,7 @@ export function CardRegister() {
 
               <Input
                 type="tel"
-                placeholder="+201000000000"
+                placeholder="+20 123 4567 890"
                 className="h-12 rounded-xl border-2 border-[#409D9B]"
                 {...register("phone")}
               />
@@ -125,10 +125,12 @@ export function CardRegister() {
 
           <CardFooter className="flex-col gap-3">
 
-            <Button disabled={isPending} className="w-full h-12 rounded-xl bg-[#409D9B] hover:bg-[#2f7b79] cursor-pointer text-white font-bold text-2xl">
-              {isPending
-                ? "Loading..."
-                : "Create Account"}
+            <Button
+              disabled={isPending}
+              className={`w-full h-12 rounded-xl bg-[#409D9B] hover:bg-[#2f7b79] text-white font-bold text-2xl ${isPending ? "cursor-not-allowed opacity-70" : "cursor-pointer"
+                }`}
+            >
+              {isPending ? "Loading..." : "Create Account"}
             </Button>
 
             <p className="text-sm text-gray-500 mt-3">

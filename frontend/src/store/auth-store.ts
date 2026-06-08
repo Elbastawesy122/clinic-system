@@ -1,10 +1,17 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface User {
+export interface User {
   _id: string;
   name: string;
   email: string;
+  phone?: string;
+  image?: string;
+  role: "admin" | "doctor" | "patient";
+  isVerified: boolean;
+  isBlocked: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface AuthStore {
