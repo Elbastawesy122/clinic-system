@@ -9,26 +9,22 @@ export interface Patient {
   updatedAt: string;
 }
 
+export interface DoctorPatient {
+  patient: Patient;
+}
+
 export interface PatientsResponse {
-  users: Patient[];
-  totalUsers: number;
+  patients: Patient[];
+  totalPatients: number;
   totalPages: number;
   currentPage: number;
 }
 
-export interface DoctorPatient {
-  _id: string;
-  name: string;
-  email: string;
+export interface DoctorPatientsResponse {
+  patients: DoctorPatient[];
+  totalPatients: number;
+  totalPages: number;
+  currentPage: number;
 }
 
-export interface DoctorPatientsResponse {
-  patient: DoctorPatient;
-  clinic: {
-    _id: string;
-    name: string;
-  };
-  appointmentDate: string;
-  timeSlot: string;
-  status: string;
-}
+export type PatientRow = Patient | DoctorPatient;

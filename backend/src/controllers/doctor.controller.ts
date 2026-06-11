@@ -4,6 +4,9 @@ import { Doctor } from "../models/doctor.model";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { sendMail } from "../utils/sendMail";
+import { PipelineStage } from "mongoose";
+import { Appointment } from "../models/appointment.model";
+import { AuthRequest } from "../types/auth-request";
 
 export const createDoctor = async (req: Request, res: Response) => {
   try {
@@ -301,4 +304,133 @@ export const setupDoctorPassword = async (req: Request, res: Response) => {
   res.status(200).json({
     message: "Password set successfully",
   });
+};
+
+export const getMyPatients = async (req: AuthRequest, res: Response) => {
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const search = String(req.query.search || "").trim();
+
+    const skip = (page - 1) * limit;
+
+    const doctor = await Doctor.findOne({
+      user: req.user?._id,
+    });
+
+    if (!doctor) {
+      return res.status(404).json({
+        message: "Doctor not found",
+      });
+    }
+
+    const pipeline: any[] = [
+      {
+        $match: {
+          doctor: doctor._id,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "patient",
+          foreignField: "_id",
+          as: "patient",
+        },
+      },
+
+      {
+        $unwind: "$patient",
+      },
+    ];
+
+    if (search) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              "patient.name": {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              "patient.email": {
+                $regex: search,
+                $options: "i",
+              },
+            },
+          ],
+        },
+      });
+    }
+
+    pipeline.push(
+      {
+        $group: {
+          _id: "$patient._id",
+          patient: {
+            $first: {
+              _id: "$patient._id",
+              name: "$patient.name",
+              email: "$patient.email",
+              isBlocked: "$patient.isBlocked",
+              isVerified: "$patient.isVerified",
+            },
+          },
+          totalAppointments: {
+            $sum: 1,
+          },
+          lastAppointment: {
+            $max: "$appointmentDate",
+          },
+        },
+      },
+
+      {
+        $sort: {
+          lastAppointment: -1,
+        },
+      },
+
+      {
+        $facet: {
+          patients: [
+            {
+              $skip: skip,
+            },
+            {
+              $limit: limit,
+            },
+          ],
+
+          totalCount: [
+            {
+              $count: "count",
+            },
+          ],
+        },
+      }
+    );
+
+    const result = await Appointment.aggregate(pipeline);
+
+    const patients = result[0]?.patients || [];
+    const totalPatients = result[0]?.totalCount?.[0]?.count || 0;
+
+    return res.status(200).json({
+      patients,
+      totalPatients,
+      totalPages: Math.ceil(totalPatients / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error("🔥 getMyPatients FULL ERROR:", error);
+
+    return res.status(500).json({
+      message: "Server Error",
+      error: error instanceof Error ? error.message : error,
+    });
+  }
 };

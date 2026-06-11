@@ -5,6 +5,8 @@ export const getDoctorsApi = (page: number, search: string) => api.get(`/dashboa
 
 export const getDoctorApi = (id: string) => api.get(`/dashboard/doctors/${id}`);
 
+export const getDoctorPatientsApi = async (page: number, search: string) => api.get(`/dashboard/doctors/my-patients?page=${page}&search=${search}`);
+
 export const createDoctorApi = (data: DoctorDto) => api.post("/dashboard/doctors", data);
 
 export const updateDoctorApi = (id: string, data: DoctorDto) => api.put(`/dashboard/doctors/${id}`, data);

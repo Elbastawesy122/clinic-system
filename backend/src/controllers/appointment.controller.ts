@@ -48,36 +48,75 @@ export const getAppointments = async (req: Request, res: Response) => {
   try {
     const page = Number(req.query.page) || 1;
     const limit = 6;
-    const search = (req.query.search as string) || "";
-
     const skip = (page - 1) * limit;
+    const search = (req.query.search as string) || "";
 
     const searchMatch = search
       ? {
           $or: [
-            {
-              "patient.name": {
-                $regex: search,
-                $options: "i",
-              },
-            },
-            {
-              "doctorUser.name": {
-                $regex: search,
-                $options: "i",
-              },
-            },
-            {
-              "clinic.name": {
-                $regex: search,
-                $options: "i",
-              },
-            },
+            { "patient.name": { $regex: search, $options: "i" } },
+            { "doctorUser.name": { $regex: search, $options: "i" } },
+            { "clinic.name": { $regex: search, $options: "i" } },
           ],
         }
       : {};
 
-    const appointments = await Appointment.aggregate([
+    const pipeline: any[] = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "patient",
+          foreignField: "_id",
+          as: "patient",
+        },
+      },
+      { $unwind: "$patient" },
+      {
+        $lookup: {
+          from: "doctors",
+          localField: "doctor",
+          foreignField: "_id",
+          as: "doctor",
+        },
+      },
+      { $unwind: "$doctor" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "doctor.user",
+          foreignField: "_id",
+          as: "doctorUser",
+        },
+      },
+      { $unwind: "$doctorUser" },
+      {
+        $addFields: {
+          "doctor.user": "$doctorUser",
+        },
+      },
+      {
+        $lookup: {
+          from: "clinics",
+          localField: "clinic",
+          foreignField: "_id",
+          as: "clinic",
+        },
+      },
+      { $unwind: "$clinic" },
+      { $match: searchMatch },
+      { $sort: { appointmentDate: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $project: {
+          doctorUser: 0,
+        },
+      },
+    ];
+
+    const appointments = await Appointment.aggregate(pipeline);
+
+    const countPipeline = [
       {
         $lookup: {
           from: "users",
@@ -109,64 +148,10 @@ export const getAppointments = async (req: Request, res: Response) => {
       { $unwind: "$doctorUser" },
 
       {
-        $lookup: {
-          from: "clinics",
-          localField: "clinic",
-          foreignField: "_id",
-          as: "clinic",
+        $addFields: {
+          "doctor.user": "$doctorUser",
         },
       },
-      { $unwind: "$clinic" },
-
-      {
-        $match: searchMatch,
-      },
-
-      {
-        $sort: {
-          appointmentDate: -1,
-        },
-      },
-
-      {
-        $skip: skip,
-      },
-
-      {
-        $limit: limit,
-      },
-    ]);
-
-    const totalResult = await Appointment.aggregate([
-      {
-        $lookup: {
-          from: "users",
-          localField: "patient",
-          foreignField: "_id",
-          as: "patient",
-        },
-      },
-      { $unwind: "$patient" },
-
-      {
-        $lookup: {
-          from: "doctors",
-          localField: "doctor",
-          foreignField: "_id",
-          as: "doctor",
-        },
-      },
-      { $unwind: "$doctor" },
-
-      {
-        $lookup: {
-          from: "users",
-          localField: "doctor.user",
-          foreignField: "_id",
-          as: "doctorUser",
-        },
-      },
-      { $unwind: "$doctorUser" },
 
       {
         $lookup: {
@@ -178,14 +163,12 @@ export const getAppointments = async (req: Request, res: Response) => {
       },
       { $unwind: "$clinic" },
 
-      {
-        $match: searchMatch,
-      },
+      { $match: searchMatch },
 
-      {
-        $count: "total",
-      },
-    ]);
+      { $count: "total" },
+    ];
+
+    const totalResult = await Appointment.aggregate(countPipeline);
 
     const totalAppointments = totalResult[0]?.total || 0;
 
@@ -196,8 +179,11 @@ export const getAppointments = async (req: Request, res: Response) => {
       currentPage: page,
     });
   } catch (error) {
+    console.error("getAppointments error:", error);
+
     return res.status(500).json({
       message: "Server Error",
+      error,
     });
   }
 };

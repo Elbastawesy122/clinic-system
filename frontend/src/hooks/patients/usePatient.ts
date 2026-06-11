@@ -10,7 +10,7 @@ export const usePatient = (id: string) => {
 
     queryFn: async () => {
       const res = await getPatientApi(id);
-      return res.data;
+      return res.patient;
     },
 
     enabled: !!id,

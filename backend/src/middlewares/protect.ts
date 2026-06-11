@@ -36,7 +36,6 @@ export const protect = async (
         message: "User not found",
       });
     }
-
     req.user = user;
 
     next();

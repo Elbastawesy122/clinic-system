@@ -42,7 +42,6 @@ export const appointmentColumns = ({
 }: AppointmentColumnsProps): ColumnDef<Appointment>[] => {
     const columns: ColumnDef<Appointment>[] = [];
 
-    // ================= PATIENT VIEW =================
     if (role === "patient") {
         columns.push({
             accessorKey: "doctor",
@@ -51,7 +50,6 @@ export const appointmentColumns = ({
         });
     }
 
-    // ================= DOCTOR VIEW =================
     if (role === "doctor") {
         columns.push({
             accessorKey: "patient",
@@ -59,9 +57,8 @@ export const appointmentColumns = ({
             cell: ({ row }) => row.original.patient.name,
         });
     }
-
-    // ================= ADMIN VIEW =================
     if (role === "admin") {
+        
         columns.push(
             {
                 accessorKey: "patient",
@@ -71,12 +68,10 @@ export const appointmentColumns = ({
             {
                 accessorKey: "doctor",
                 header: "Doctor",
-                cell: ({ row }) => row.original.doctor.user.name,
+                cell: ({ row }) => row.original.doctor?.user?.name,
             }
         );
     }
-
-    // ================= COMMON =================
     columns.push(
         {
             accessorKey: "clinic",
@@ -114,8 +109,6 @@ export const appointmentColumns = ({
             },
         }
     );
-
-    // ================= ACTIONS =================
     columns.push({
         id: "actions",
         header: "Actions",
@@ -125,7 +118,6 @@ export const appointmentColumns = ({
             return (
                 <div className="flex items-center gap-2">
 
-                    {/* ================= PATIENT ================= */}
                     {role === "patient" && appointment.status === "pending" && (
                         <Button
                             variant="destructive"
@@ -135,7 +127,6 @@ export const appointmentColumns = ({
                         </Button>
                     )}
 
-                    {/* ================= DOCTOR / ADMIN STATUS ================= */}
                     {(role === "doctor" || role === "admin") && (
                         <Select
                             value={appointment.status}
@@ -159,7 +150,6 @@ export const appointmentColumns = ({
                         </Select>
                     )}
 
-                    {/* ================= ADMIN ONLY ================= */}
                     {role === "admin" && (
                         <>
                             <Button

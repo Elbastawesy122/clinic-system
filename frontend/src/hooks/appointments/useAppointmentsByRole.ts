@@ -13,10 +13,9 @@ export const useAppointmentsByRole = (page: number, search: string) => {
   return useQuery({
     queryKey: ["appointments", role, page, search],
 
-    enabled: !!role, // مهم جدًا عشان ميفتش قبل ما role يجهز
+    enabled: !!role,
 
     queryFn: async () => {
-      // 👇 هنا الاختيار الذكي
       switch (role) {
         case "admin":
           return (await getAppointmentsApi(page, search)).data;
