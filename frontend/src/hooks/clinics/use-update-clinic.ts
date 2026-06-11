@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import { updateClinicApi } from "@/api/clinic";
+import { updateClinicApi } from "@/api/clinic.api";
 
 import { ClinicDto } from "@/types/clinic.types";
 import { AxiosError } from "axios";

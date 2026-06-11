@@ -1,9 +1,10 @@
-import { Response, NextFunction } from "express";
+import { Response } from "express";
 
 import { AuthRequest } from "../types/auth-request";
 import { User } from "../models/user.model";
 import cloudinary from "../config/cloudinary";
 import streamifier from "streamifier";
+import { Appointment } from "../models/appointment.model";  
 
 export const getAllUsers = async (req: AuthRequest, res: Response) => {
   try {
@@ -220,4 +221,62 @@ export const unblockUser = async (req: AuthRequest, res: Response) => {
       message: "Failed to unblock user",
     });
   }
+};
+
+export const getPatients = async (req: AuthRequest, res: Response) => {
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const search = (req.query.search as string) || "";
+
+  const query = {
+    role: "patient" as const,
+    name: {
+      $regex: search,
+      $options: "i",
+    },
+  };
+
+  const totalPatients = await User.countDocuments(query);
+
+  const patients = await User.find(query)
+    .select("-password -refreshToken")
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  res.status(200).json({
+    patients,
+    totalPatients,
+    totalPages: Math.ceil(totalPatients / limit),
+    currentPage: page,
+  });
+};
+
+export const getPatientById = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+
+  const patient = await User.findOne({
+    _id: id,
+    role: "patient",
+  }).select("-password -refreshToken");
+
+  if (!patient) {
+    return res.status(404).json({
+      success: false,
+      message: "Patient not found",
+    });
+  }
+
+  const appointments = await Appointment.find({
+    patient: id,
+  })
+    .populate("doctor")
+    .populate("clinic")
+    .sort({ appointmentDate: -1 });
+
+  res.status(200).json({
+    success: true,
+    patient,
+    appointments,
+  });
 };

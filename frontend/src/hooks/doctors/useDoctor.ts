@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getDoctorApi } from "@/api/doctors";
+import { getDoctorApi } from "@/api/doctors.api";
 import { Doctor } from "@/types/doctor.types";
 
 export const useDoctor = (id: string) => {

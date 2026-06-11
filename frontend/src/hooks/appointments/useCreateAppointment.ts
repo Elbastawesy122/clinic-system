@@ -1,8 +1,9 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createAppointmentApi } from "@/api/appointment";
+import { createAppointmentApi } from "@/api/appointment.api";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 export const useCreateAppointment = () => {
   const queryClient = useQueryClient();
@@ -10,17 +11,16 @@ export const useCreateAppointment = () => {
   return useMutation({
     mutationFn: createAppointmentApi,
 
-    onSuccess: () => {
-      toast.success("Appointment Created");
-
+    onSuccess: (res) => {
       queryClient.invalidateQueries({
         queryKey: ["appointments"],
       });
+
+      toast.success(res.data.message || "Appointment created");
     },
 
-    onError: (error) => {
-      console.log(error);
-      toast.error("Failed");
+    onError: (err: AxiosError<{ message: string }>) => {
+      toast.error(err?.response?.data?.message || "Failed to create appointment");
     },
   });
 };

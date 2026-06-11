@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Clinic,
 } from "@/types/clinic.types";
-import { clinicFormSchema, ClinicFormValues, workingDays } from "@/schemas/clinic-form-schema";
+import { clinicFormSchema, ClinicFormValues, workingDays } from "@/schemas/clinic.schema";
 
 import { useCreateClinic } from "@/hooks/clinics/use-create-clinic";
 import { useUpdateClinic } from "@/hooks/clinics/use-update-clinic";

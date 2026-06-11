@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Appointment } from "../models/appointment.model";
 import { AuthRequest } from "../types/auth-request";
 import { Doctor } from "../models/doctor.model";
+import { PipelineStage } from "mongoose";
 
 export const createAppointment = async (req: AuthRequest, res: Response) => {
   try {
@@ -297,21 +298,129 @@ export const deleteAppointment = async (req: Request, res: Response) => {
 
 export const getMyAppointments = async (req: AuthRequest, res: Response) => {
   try {
-    const appointments = await Appointment.find({
+    const page = Number(req.query.page) || 1;
+    const limit = 6;
+    const skip = (page - 1) * limit;
+    const search = (req.query.search as string) || "";
+
+    const filter: any = {
       patient: req.user?._id,
-    })
+    };
 
-      .populate({
-        path: "doctor",
-        populate: {
-          path: "user",
-          select: "name",
+    const searchMatch = search
+      ? {
+          $or: [
+            {
+              "doctorUser.name": {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              "clinic.name": {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              timeSlot: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+          ],
+        }
+      : {};
+
+    const pipeline: PipelineStage[] = [
+      {
+        $match: filter,
+      },
+      {
+        $lookup: {
+          from: "doctors",
+          localField: "doctor",
+          foreignField: "_id",
+          as: "doctor",
         },
-      })
+      },
+      { $unwind: "$doctor" },
 
-      .populate("clinic", "name");
+      {
+        $lookup: {
+          from: "users",
+          localField: "doctor.user",
+          foreignField: "_id",
+          as: "doctorUser",
+        },
+      },
+      { $unwind: "$doctorUser" },
 
-    res.status(200).json(appointments);
+      {
+        $lookup: {
+          from: "clinics",
+          localField: "clinic",
+          foreignField: "_id",
+          as: "clinic",
+        },
+      },
+      { $unwind: "$clinic" },
+
+      {
+        $match: searchMatch,
+      },
+
+      {
+        $sort: { appointmentDate: -1 },
+      },
+
+      { $skip: skip },
+      { $limit: limit },
+    ];
+
+    const appointments = await Appointment.aggregate(pipeline);
+
+    const totalResult = await Appointment.aggregate([
+      { $match: filter },
+      {
+        $lookup: {
+          from: "doctors",
+          localField: "doctor",
+          foreignField: "_id",
+          as: "doctor",
+        },
+      },
+      { $unwind: "$doctor" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "doctor.user",
+          foreignField: "_id",
+          as: "doctorUser",
+        },
+      },
+      { $unwind: "$doctorUser" },
+      {
+        $lookup: {
+          from: "clinics",
+          localField: "clinic",
+          foreignField: "_id",
+          as: "clinic",
+        },
+      },
+      { $unwind: "$clinic" },
+      { $match: searchMatch },
+      { $count: "total" },
+    ]);
+
+    const totalAppointments = totalResult[0]?.total || 0;
+
+    res.status(200).json({
+      appointments,
+      totalAppointments,
+      totalPages: Math.ceil(totalAppointments / limit),
+      currentPage: page,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Server Error",
@@ -324,6 +433,11 @@ export const getDoctorAppointments = async (
   res: Response,
 ) => {
   try {
+    const page = Number(req.query.page) || 1;
+    const limit = 6;
+    const skip = (page - 1) * limit;
+    const search = (req.query.search as string) || "";
+
     const doctor = await Doctor.findOne({
       user: req.user?._id,
     });
@@ -334,13 +448,105 @@ export const getDoctorAppointments = async (
       });
     }
 
-    const appointments = await Appointment.find({
+    const filter = {
       doctor: doctor._id,
-    })
-      .populate("patient", "name email")
-      .populate("clinic", "name");
+    };
 
-    res.status(200).json(appointments);
+    const searchMatch = search
+      ? {
+          $or: [
+            {
+              "patient.name": {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              "patient.email": {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              "clinic.name": {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              timeSlot: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+          ],
+        }
+      : {};
+
+    const pipeline: PipelineStage[] = [
+      { $match: filter },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "patient",
+          foreignField: "_id",
+          as: "patient",
+        },
+      },
+      { $unwind: "$patient" },
+
+      {
+        $lookup: {
+          from: "clinics",
+          localField: "clinic",
+          foreignField: "_id",
+          as: "clinic",
+        },
+      },
+      { $unwind: "$clinic" },
+
+      { $match: searchMatch },
+
+      { $sort: { appointmentDate: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    ];
+
+    const appointments = await Appointment.aggregate(pipeline);
+
+    const totalResult = await Appointment.aggregate([
+      { $match: filter },
+      {
+        $lookup: {
+          from: "users",
+          localField: "patient",
+          foreignField: "_id",
+          as: "patient",
+        },
+      },
+      { $unwind: "$patient" },
+      {
+        $lookup: {
+          from: "clinics",
+          localField: "clinic",
+          foreignField: "_id",
+          as: "clinic",
+        },
+      },
+      { $unwind: "$clinic" },
+      { $match: searchMatch },
+      { $count: "total" },
+    ]);
+
+    const totalAppointments = totalResult[0]?.total || 0;
+
+    res.status(200).json({
+      appointments,
+      totalAppointments,
+      totalPages: Math.ceil(totalAppointments / limit),
+      currentPage: page,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Server Error",

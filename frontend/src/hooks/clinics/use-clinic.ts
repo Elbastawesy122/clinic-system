@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { getClinicApi } from "@/api/clinic";
+import { getClinicApi } from "@/api/clinic.api";
 
 import { Clinic } from "@/types/clinic.types";
 

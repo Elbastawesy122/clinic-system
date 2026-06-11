@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 
-import { verifyEmailApi } from "@/api/auth";
+import { verifyEmailApi } from "@/api/auth.api";
 
 import { toast } from "sonner";
 import { AxiosError } from "axios";

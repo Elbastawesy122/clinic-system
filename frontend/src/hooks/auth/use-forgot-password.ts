@@ -2,7 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { forgotPasswordApi } from "@/api/auth";
+import { forgotPasswordApi } from "@/api/auth.api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 

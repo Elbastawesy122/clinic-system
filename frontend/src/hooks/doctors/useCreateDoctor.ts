@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createDoctorApi } from "@/api/doctors";
+import { createDoctorApi } from "@/api/doctors.api";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 

@@ -10,3 +10,5 @@ export const createDoctorApi = (data: DoctorDto) => api.post("/dashboard/doctors
 export const updateDoctorApi = (id: string, data: DoctorDto) => api.put(`/dashboard/doctors/${id}`, data);
 
 export const deleteDoctorApi = (id: string) => api.delete(`/dashboard/doctors/${id}`);
+
+export const setupDoctorPasswordApi = (token: string, password: string) => api.post(`/dashboard/doctors/setup-password/${token}`, { password });

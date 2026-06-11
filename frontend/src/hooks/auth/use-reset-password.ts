@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { resetPasswordApi } from "@/api/auth";
+import { resetPasswordApi } from "@/api/auth.api";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { ResetPasswordDto } from "@/types/auth.types";

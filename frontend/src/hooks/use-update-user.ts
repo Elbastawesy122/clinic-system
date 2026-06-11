@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { updateUserApi } from "@/api/user";
+import { updateUserApi } from "@/api/user.api";
 import { useAuthStore } from "@/store/auth-store";
 import { toast } from "sonner";
 import { AxiosError } from "axios";

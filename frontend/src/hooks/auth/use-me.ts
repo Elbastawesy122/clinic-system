@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { meApi } from "@/api/auth";
+import { meApi } from "@/api/auth.api";
 import { useAuthStore } from "@/store/auth-store";
 
 export const useMe = () => {

@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import { createClinicApi } from "@/api/clinic";
+import { createClinicApi } from "@/api/clinic.api";
 import { AxiosError } from "axios";
 
 export const useCreateClinic = () => {

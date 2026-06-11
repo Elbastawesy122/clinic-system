@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 
-import { toggleClinicStatusApi } from "@/api/clinic";
+import { toggleClinicStatusApi } from "@/api/clinic.api";
 import { AxiosError } from "axios";
 
 export const useToggleClinicStatus = () => {

@@ -1,8 +1,8 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { deleteUserApi } from "@/api/user";
-import { logoutApi } from "@/api/auth";
+import { deleteUserApi } from "@/api/user.api";
+import { logoutApi } from "@/api/auth.api";
 import { useAuthStore } from "@/store/auth-store";
 import { toast } from "sonner";
 

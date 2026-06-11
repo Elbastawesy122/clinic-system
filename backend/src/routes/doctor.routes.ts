@@ -35,6 +35,7 @@ router
   .get(protect, getDoctorById)
   .put(protect, authorize("admin"), validate(updateDoctorSchema), updateDoctor)
   .delete(protect, authorize("admin"), deleteDoctor);
+
 router.post("/setup-password/:token", setupDoctorPassword);
 
 export default router;

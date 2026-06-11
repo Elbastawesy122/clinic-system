@@ -9,7 +9,7 @@ import {
     doctorFormSchema,
     DoctorFormValues,
     workingDays,
-} from "@/schemas/doctor-form-schema";
+} from "@/schemas/doctor.schema";
 
 import { useCreateDoctor } from "@/hooks/doctors/useCreateDoctor";
 import { useUpdateDoctor } from "@/hooks/doctors/useUpdateDoctor";
@@ -58,10 +58,10 @@ export function DoctorForm({
                 doctor?.specialization || "",
 
             experience:
-                doctor?.experience || 0,
+                doctor?.experience,
 
             fees:
-                doctor?.fees || 0,
+                doctor?.fees,
 
             bio:
                 doctor?.bio || "",
@@ -155,7 +155,13 @@ export function DoctorForm({
             <div className="grid grid-cols-2 gap-4">
                 <Input
                     type="number"
+                    min={0}
                     placeholder="Experience"
+                    onKeyDown={(e) => {
+                        if (e.key === "-" || e.key === "e") {
+                            e.preventDefault();
+                        }
+                    }}
                     {...form.register("experience", {
                         valueAsNumber: true,
                     })}
@@ -163,7 +169,13 @@ export function DoctorForm({
 
                 <Input
                     type="number"
+                    min={0}
                     placeholder="Fees"
+                    onKeyDown={(e) => {
+                        if (e.key === "-" || e.key === "e") {
+                            e.preventDefault();
+                        }
+                    }}
                     {...form.register("fees", {
                         valueAsNumber: true,
                     })}

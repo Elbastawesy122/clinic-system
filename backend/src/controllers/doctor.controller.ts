@@ -61,7 +61,7 @@ export const createDoctor = async (req: Request, res: Response) => {
       endTime,
     });
 
-    const setupLink = `${process.env.CLIENT_URL}/doctor/dashboard/setup-password/${setupToken}`;
+    const setupLink = `${process.env.CLIENT_URL}/user/setup-password/${setupToken}`;
 
     await sendMail(
       email,

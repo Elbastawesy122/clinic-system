@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/store/auth-store";
 import { useMutation } from "@tanstack/react-query";
-import { logoutApi } from "@/api/auth";
+import { logoutApi } from "@/api/auth.api";
 import { toast } from "sonner";
 import { UserSettingsSheet } from "./UserSettingsSheet";
 import Image from "next/image";

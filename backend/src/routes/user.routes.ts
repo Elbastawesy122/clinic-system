@@ -7,6 +7,8 @@ import {
   deleteUser,
   blockUser,
   unblockUser,
+  getPatientById,
+  getPatients,
 } from "../controllers/user.controller";
 
 import { protect } from "../middlewares/protect";
@@ -40,5 +42,19 @@ router.patch("/unblock/:id", protect, authorize("admin"), unblockUser);
 router.get("/:id", protect, getUserById);
 
 router.put("/:id", protect, upload.single("image"), updateUser);
+
+router.get(
+  "/dashboard/patients",
+  protect,
+  authorize("admin", "doctor"),
+  getPatients,
+);
+
+router.get(
+  "/dashboard/patients/:id",
+  protect,
+  authorize("admin", "doctor"),
+  getPatientById,
+);
 
 export default router;

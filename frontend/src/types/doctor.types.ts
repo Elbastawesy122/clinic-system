@@ -43,3 +43,8 @@ export interface DoctorsResponse {
   totalPages: number;
   currentPage: number;
 }
+
+export interface SetupPasswordPayload {
+  token: string;
+  password: string;
+};
