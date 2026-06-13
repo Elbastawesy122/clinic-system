@@ -15,7 +15,7 @@ export const AuthLayout = ({
 
                     <div className="relative z-10">
                         <Image
-                            src="/images/landing-page/logo.png"
+                            src="/images/logo.png"
                             alt="Logo"
                             width={180}
                             height={120}
