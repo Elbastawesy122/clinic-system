@@ -1,5 +1,3 @@
-import Image from "next/image";
-import Map from "./Map";
 
 export const ContactSection = () => {
   return (
@@ -93,11 +91,6 @@ export const ContactSection = () => {
           </div>
 
         </div>
-      </div>
-
-      {/* Map */}
-      <div className="rounded-2xl overflow-hidden shadow-md h-62 mt-6">
-        <Map />
       </div>
     </section>
   );

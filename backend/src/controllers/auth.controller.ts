@@ -87,7 +87,7 @@ export const updateMe = async (
 // REGISTER
 export const register = async (req: Request, res: Response) => {
   try {
-    const { name, email, phone, image, password } = req.body;
+    const { name, email, phone, image, password, role } = req.body;
 
     const existUser = await User.findOne({ email });
 
@@ -107,6 +107,7 @@ export const register = async (req: Request, res: Response) => {
       phone,
       image,
       password: hashedPassword,
+      role,
 
       verificationOTP: otp,
 

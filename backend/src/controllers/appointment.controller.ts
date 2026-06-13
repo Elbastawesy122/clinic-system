@@ -47,7 +47,7 @@ export const createAppointment = async (req: AuthRequest, res: Response) => {
 export const getAppointments = async (req: Request, res: Response) => {
   try {
     const page = Number(req.query.page) || 1;
-    const limit = 6;
+    const limit = 5;
     const skip = (page - 1) * limit;
     const search = (req.query.search as string) || "";
 
@@ -285,7 +285,7 @@ export const deleteAppointment = async (req: Request, res: Response) => {
 export const getMyAppointments = async (req: AuthRequest, res: Response) => {
   try {
     const page = Number(req.query.page) || 1;
-    const limit = 6;
+    const limit = 5;
     const skip = (page - 1) * limit;
     const search = (req.query.search as string) || "";
 
@@ -420,7 +420,7 @@ export const getDoctorAppointments = async (
 ) => {
   try {
     const page = Number(req.query.page) || 1;
-    const limit = 6;
+    const limit = 5;
     const skip = (page - 1) * limit;
     const search = (req.query.search as string) || "";
 

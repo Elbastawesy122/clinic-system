@@ -50,7 +50,7 @@ export const UserSettingsSheet = () => {
 
     if (!user) return null;
 
-    const imageSrc = user.image || preview || "/default-avatar.png";
+    const imageSrc = user.image || preview ;
 
     const handleUpdate = () => {
         const formData = new FormData();
@@ -83,109 +83,114 @@ export const UserSettingsSheet = () => {
                     Settings
                 </button>
             </SheetTrigger>
-            <SheetContent className="border-0 bg-white w-full sm:max-w-lg">
-                <SheetHeader>
-                    <SheetTitle>
+            <SheetContent className="w-full sm:max-w-lg border-0 bg-white p-0">
+                <SheetHeader className="border-b p-6">
+                    <SheetTitle className="text-xl font-bold">
                         Account Settings
                     </SheetTitle>
+
                     <SheetDescription>
-                        Update your account
-                        information.
+                        Update your account information and profile details.
                     </SheetDescription>
                 </SheetHeader>
-                <div className="grid gap-6 px-8">
 
-                    <div className="flex justify-center items-center gap-4">
-                        <div className="relative flex items-center justify-center">
-                            {imageSrc ? (
-                                <Image
-                                    src={imageSrc}
-                                    alt={user.name}
-                                    width={0}
-                                    height={0}
-                                    sizes="100vw"
-                                    className="w-24 h-24 rounded-full object-cover border"
+                <div className="p-6 space-y-6 overflow-y-auto">
+                    {/* Avatar Card */}
+                    <div className="rounded-2xl border bg-slate-50 p-6">
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="relative">
+                                {imageSrc ? (
+                                    <Image
+                                        src={imageSrc}
+                                        alt={user.name}
+                                        width={120}
+                                        height={120}
+                                        className="h-28 w-28 rounded-full object-cover border-4 border-white shadow-md"
+                                    />
+                                ) : (
+                                    <div className="h-28 w-28 rounded-full bg-[#409D9B] flex items-center justify-center text-white text-3xl font-bold">
+                                        {user.name.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
+                                <button
+                                    onClick={handleClick}
+                                    className="absolute bottom-0 right-1 bg-[#409D9B] hover:bg-[#358a88] text-white rounded-full px-3 py-1 text-xs transition cursor-pointer">
+                                    Edit
+                                </button>
+                                <Input
+                                    type="file"
+                                    accept="image/*"
+                                    ref={fileInputRef}
+                                    onChange={handleChange}
+                                    className="hidden"
                                 />
-                            ) : (
-                                <div className="size-12 rounded-full bg-[#409D9B] flex items-center justify-center text-white font-bold text-lg">
-                                    {user.name.charAt(0).toUpperCase()}
-                                </div>
-                            )}
-                            <button
-                                onClick={handleClick}
-                                className="absolute bottom-0 right-0 bg-[#409D9B] text-white text-xs px-2 py-1 rounded-full"
-                            >
-                                Edit
-                            </button>
+                            </div>
+                            <div className="text-center">
+                                <h3 className="font-semibold text-lg">
+                                    {user.name}
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                    {user.email}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Form Card */}
+                    <div className="rounded-2xl border p-6 space-y-5">
+                        <div className="space-y-2">
+                            <Label>Name</Label>
                             <Input
-                                type="file"
-                                accept="image/*"
-                                ref={fileInputRef}
-                                onChange={handleChange}
-                                className="hidden"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="rounded-xl h-11 focus-visible:ring-[#409D9B]"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Email</Label>
+                            <Input
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="rounded-xl h-11 focus-visible:ring-[#409D9B]"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Phone</Label>
+                            <Input
+                                value={phone}
+                                onChange={(e) => setphone(e.target.value)}
+                                className="rounded-xl h-11 focus-visible:ring-[#409D9B]"
                             />
                         </div>
                     </div>
-                    <div className="grid gap-2">
-                        <Label>Name</Label>
-                        <Input
-                            value={name}
-                            onChange={(e) =>
-                                setName(e.target.value)
-                            }
-                            className="focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                    </div>
-                    <div className="grid gap-2">
-                        <Label>Email</Label>
-                        <Input
-                            value={email}
-                            onChange={(e) =>
-                                setEmail(e.target.value)
-                            }
-                            className="focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                    </div>
-                    <div className="grid gap-2">
-                        <Label>Phone</Label>
-                        <Input
-                            value={phone}
-                            onChange={(e) =>
-                                setphone(e.target.value)
-                            }
-                            className="focus-visible:ring-0 focus-visible:ring-offset-0"
-                        />
-                    </div>
-                    <Link href="/user/forgot-password">
+
+                    {/* Actions */}
+                    <div className="space-y-3">
+                        <Link href="/user/forgot-password">
+                            <Button
+                                variant="outline"
+                                className="w-full h-11 rounded-xl cursor-pointer">
+                                Change Password
+                            </Button>
+                        </Link>
                         <Button
-                            variant="outline"
-                            className="w-full"
-                        >
-                            Change Password
+                            variant="destructive"
+                            onClick={handleDelete}
+                            disabled={deleteMutation.isPending}
+                            className="w-full h-11 rounded-xl cursor-pointer">
+                            Delete Account
                         </Button>
-                    </Link>
-                    <Button
-                        variant="destructive"
-                        onClick={
-                            handleDelete
-                        }
-                    >
-                        Delete Account
-                    </Button>
+                    </div>
                 </div>
-                <SheetFooter>
-                    {/* <SheetClose asChild>
-                        <Button
-                            variant="outline"
-                        >
-                            Close
-                        </Button>
-                    </SheetClose> */}
+
+                <SheetFooter className="border-t p-6">
                     <Button
                         onClick={handleUpdate}
                         disabled={updateMutation.isPending}
-                    >
-                        Save Changes
+                        className="w-full h-11 rounded-xl bg-[#409D9B] hover:bg-[#358a88] cursor-pointer">
+                        {updateMutation.isPending
+                            ? "Saving..."
+                            : "Save Changes"}
                     </Button>
                 </SheetFooter>
             </SheetContent>

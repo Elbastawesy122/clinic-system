@@ -18,7 +18,8 @@ export const useLogout = () => {
 
     onSuccess: () => {
       logout();
-      router.push("/");
+      router.replace("/user/login");
+      router.refresh();
       toast.success("Logged Out");
     },
   });

@@ -13,8 +13,9 @@ import {
 } from "../controllers/auth.controller";
 
 import { validate } from "../middlewares/validate.middleware";
-
 import { authLimiter } from "../middlewares/rateLimit.middleware";
+import { protect } from "../middlewares/protect";
+
 import {
   forgotPasswordSchema,
   loginSchema,
@@ -23,20 +24,27 @@ import {
   updateMeSchema,
   verifyEmailSchema,
 } from "../validations/auth.validation";
-import { protect } from "../middlewares/protect";
 
 const router = Router();
 
+/* =========================
+   AUTH (PUBLIC)
+========================= */
 router.post("/register", authLimiter, validate(registerSchema), register);
-
-router.post("/verify-email", validate(verifyEmailSchema), verifyEmail);
 
 router.post("/login", authLimiter, validate(loginSchema), login);
 
-router.post("/refresh-token", refreshToken);
+router.post("/verify-email", validate(verifyEmailSchema), verifyEmail);
 
+/* =========================
+   TOKEN MANAGEMENT
+========================= */
+router.post("/refresh-token", refreshToken);
 router.post("/logout", logout);
 
+/* =========================
+   PASSWORD RECOVERY
+========================= */
 router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
 
 router.post(
@@ -45,7 +53,12 @@ router.post(
   resetPassword,
 );
 
-router.get("/me", protect, getMe);
-router.put("/me", protect, validate(updateMeSchema), updateMe);
+/* =========================
+   USER PROFILE (PROTECTED)
+========================= */
+router
+  .route("/me")
+  .get(protect, getMe)
+  .put(protect, validate(updateMeSchema), updateMe);
 
 export default router;

@@ -6,9 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Doctor } from "@/types/doctor.types";
 
 import {
-    doctorFormSchema,
-    DoctorFormValues,
-    workingDays,
+  doctorFormSchema,
+  DoctorFormValues,
 } from "@/schemas/doctor.schema";
 
 import { useCreateDoctor } from "@/hooks/doctors/useCreateDoctor";
@@ -18,235 +17,197 @@ import { useClinics } from "@/hooks/clinics/use-clinics";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
+
 import { Clinic } from "@/types/clinic.types";
+import { WorkingDay, workingDays } from "@/schemas/clinic.schema";
 
 export function DoctorForm({
-    onClose,
-    mode = "create",
-    doctor,
+  onClose,
+  mode = "create",
+  doctor,
 }: {
-    onClose: () => void;
-    mode?: "create" | "edit";
-    doctor?: Doctor | null;
+  onClose: () => void;
+  mode?: "create" | "edit";
+  doctor?: Doctor | null;
 }) {
-    const create = useCreateDoctor();
-    const update = useUpdateDoctor();
+  const create = useCreateDoctor();
+  const update = useUpdateDoctor();
 
-    const { data: clinics } = useClinics("");
+  const { data: clinics } = useClinics("");
 
-    const form = useForm<DoctorFormValues>({
-        resolver: zodResolver(doctorFormSchema),
+  const form = useForm<DoctorFormValues>({
+    resolver: zodResolver(doctorFormSchema),
+    defaultValues: {
+      name: doctor?.user?.name || "",
+      email: doctor?.user?.email || "",
+      phone: doctor?.user?.phone || "",
+      clinic:
+        typeof doctor?.clinic === "string"
+          ? doctor.clinic
+          : doctor?.clinic?._id || "",
+      specialization: doctor?.specialization || "",
+      experience: doctor?.experience,
+      fees: doctor?.fees,
+      bio: doctor?.bio || "",
+      workingDays: doctor?.workingDays || [],
+      startTime: doctor?.startTime || "",
+      endTime: doctor?.endTime || "",
+    },
+  });
 
-        defaultValues: {
-            name: doctor?.user?.name || "",
-            email: doctor?.user?.email || "",
-            phone: doctor?.user?.phone || "",
+  const clinic = useWatch({
+    control: form.control,
+    name: "clinic",
+  });
 
-            clinic:
-                typeof doctor?.clinic === "string"
-                    ? doctor.clinic
-                    : doctor?.clinic?._id || "",
+  const selectedDays = useWatch({
+    control: form.control,
+    name: "workingDays",
+  });
 
-            specialization:
-                doctor?.specialization || "",
+  const toggleDay = (day: WorkingDay) => {
+    const current = selectedDays || [];
 
-            experience:
-                doctor?.experience,
+    if (current.includes(day)) {
+      form.setValue(
+        "workingDays",
+        current.filter((d) => d !== day)
+      );
+    } else {
+      form.setValue("workingDays", [...current, day]);
+    }
+  };
 
-            fees:
-                doctor?.fees,
+  const onSubmit = (data: DoctorFormValues) => {
+    if (mode === "edit" && doctor) {
+      update.mutate(
+        { id: doctor._id, data },
+        { onSuccess: onClose }
+      );
+    } else {
+      create.mutate(data, { onSuccess: onClose });
+    }
+  };
 
-            bio:
-                doctor?.bio || "",
+  const isPending = create.isPending || update.isPending;
 
-            workingDays:
-                doctor?.workingDays || [],
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
-            startTime:
-                doctor?.startTime || "",
+      {/* BASIC INFO */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <Input className="rounded-xl" placeholder="Doctor Name" {...form.register("name")} />
+        <Input className="rounded-xl" placeholder="Email" type="email" {...form.register("email")} />
+        <Input className="rounded-xl md:col-span-2" placeholder="Phone" {...form.register("phone")} />
+      </div>
 
-            endTime:
-                doctor?.endTime || "",
-        },
-    });
+      {/* CLINIC */}
+      <Select value={clinic} onValueChange={(value) => form.setValue("clinic", value)}>
+        <SelectTrigger className="rounded-xl cursor-pointer">
+          <SelectValue placeholder="Select Clinic" />
+        </SelectTrigger>
 
-    const clinic = useWatch({
-        control: form.control,
-        name: "clinic",
-    });
+        <SelectContent>
+          {clinics?.clinics?.map((clinic: Clinic) => (
+            <SelectItem
+              key={clinic._id}
+              value={clinic._id}
+              className="cursor-pointer"
+            >
+              {clinic.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-    const onSubmit = (data: DoctorFormValues) => {
-        if (mode === "edit" && doctor) {
-            update.mutate(
-                {
-                    id: doctor._id,
-                    data,
-                },
-                {
-                    onSuccess: onClose,
-                }
+      {/* MEDICAL INFO */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <Input className="rounded-xl" placeholder="Specialization" {...form.register("specialization")} />
+
+        <Input
+          className="rounded-xl"
+          type="number"
+          min={0}
+          placeholder="Experience"
+          {...form.register("experience", { valueAsNumber: true })}
+        />
+
+        <Input
+          className="rounded-xl md:col-span-2"
+          type="number"
+          min={0}
+          placeholder="Fees"
+          {...form.register("fees", { valueAsNumber: true })}
+        />
+
+        <Input className="rounded-xl md:col-span-2" placeholder="Bio" {...form.register("bio")} />
+      </div>
+
+      {/* TIME */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <label className="text-sm font-medium">Start Time</label>
+          <Input className="rounded-xl cursor-pointer" type="time" {...form.register("startTime")} />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium">End Time</label>
+          <Input className="rounded-xl cursor-pointer" type="time" {...form.register("endTime")} />
+        </div>
+      </div>
+
+      {/* WORKING DAYS - CHIPS */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">
+          Working Days
+        </label>
+
+        <div className="flex flex-wrap gap-2">
+          {workingDays.map((day) => {
+            const active = selectedDays?.includes(day);
+
+            return (
+              <button
+                type="button"
+                key={day}
+                onClick={() => toggleDay(day)}
+                className={`
+                  px-3 py-1 rounded-full text-sm border transition cursor-pointer
+                  ${
+                    active
+                      ? "bg-[#409D9B] text-white border-[#409D9B]"
+                      : "bg-white text-gray-600 hover:border-[#409D9B]"
+                  }
+                `}
+              >
+                {day}
+              </button>
             );
-        } else {
-            create.mutate(data, {
-                onSuccess: onClose,
-            });
-        }
-    };
+          })}
+        </div>
+      </div>
 
-    const isPending =
-        create.isPending ||
-        update.isPending;
-
-    return (
-        <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-        >
-            <Input
-                placeholder="Doctor Name"
-                {...form.register("name")}
-            />
-
-            <Input
-                placeholder="Email"
-                type="email"
-                {...form.register("email")}
-            />
-
-            <Input
-                placeholder="Phone"
-                {...form.register("phone")}
-            />
-
-            <Select
-                value={clinic}
-                onValueChange={(value) =>
-                    form.setValue("clinic", value)
-                }
-            >
-                <SelectTrigger>
-                    <SelectValue placeholder="Select Clinic" />
-                </SelectTrigger>
-
-                <SelectContent>
-                    {clinics?.clinics?.map((clinic: Clinic) => (
-                        <SelectItem
-                            key={clinic._id}
-                            value={clinic._id}
-                        >
-                            {clinic.name}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-
-            <Input
-                placeholder="Specialization"
-                {...form.register("specialization")}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-                <Input
-                    type="number"
-                    min={0}
-                    placeholder="Experience"
-                    onKeyDown={(e) => {
-                        if (e.key === "-" || e.key === "e") {
-                            e.preventDefault();
-                        }
-                    }}
-                    {...form.register("experience", {
-                        valueAsNumber: true,
-                    })}
-                />
-
-                <Input
-                    type="number"
-                    min={0}
-                    placeholder="Fees"
-                    onKeyDown={(e) => {
-                        if (e.key === "-" || e.key === "e") {
-                            e.preventDefault();
-                        }
-                    }}
-                    {...form.register("fees", {
-                        valueAsNumber: true,
-                    })}
-                />
-            </div>
-
-            <Input
-                placeholder="Bio"
-                {...form.register("bio")}
-            />
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium">
-                        Start Time
-                    </label>
-
-                    <Input
-                        type="time"
-                        {...form.register("startTime")}
-                    />
-                </div>
-
-                <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium">
-                        End Time
-                    </label>
-
-                    <Input
-                        type="time"
-                        {...form.register("endTime")}
-                    />
-                </div>
-            </div>
-
-            <div>
-                <label className="text-sm font-medium mb-2 block">
-                    Working Days
-                </label>
-
-                <div className="grid grid-cols-4 gap-2">
-                    {workingDays.map((day) => (
-                        <label
-                            key={day}
-                            className="flex items-center gap-2 text-sm"
-                        >
-                            <input
-                                type="checkbox"
-                                value={day}
-                                {...form.register(
-                                    "workingDays"
-                                )}
-                            />
-                            {day}
-                        </label>
-                    ))}
-                </div>
-            </div>
-
-            <Button
-                className="w-full"
-                disabled={isPending}
-            >
-                {mode === "edit"
-                    ? isPending
-                        ? "Updating..."
-                        : "Update Doctor"
-                    : isPending
-                        ? "Creating..."
-                        : "Create Doctor"}
-            </Button>
-        </form>
-    );
+      {/* SUBMIT */}
+      <Button
+        className="w-full rounded-xl cursor-pointer bg-[#409D9B] hover:bg-[#358a88]"
+        disabled={isPending}
+      >
+        {mode === "edit"
+          ? isPending
+            ? "Updating..."
+            : "Update Doctor"
+          : isPending
+          ? "Creating..."
+          : "Create Doctor"}
+      </Button>
+    </form>
+  );
 }

@@ -14,20 +14,31 @@ import {
 import { protect } from "../middlewares/protect";
 import { authorize } from "../middlewares/authorize";
 import { validate } from "../middlewares/validate.middleware";
-import { updateUserSchema } from "../validations/user.validation";
 import { upload } from "../middlewares/upload.middleware";
+
+import { updateUserSchema } from "../validations/user.validation";
 
 const router = Router();
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes
+| ADMIN - USERS MANAGEMENT
 |--------------------------------------------------------------------------
 */
 
-router.get("/", protect, authorize("admin"), getAllUsers);
+router.route("/").get(protect, authorize("admin"), getAllUsers);
 
-router.delete("/:id", protect, authorize("admin"), deleteUser);
+router
+  .route("/:id")
+  .get(protect, getUserById)
+  .put(protect, upload.single("image"), validate(updateUserSchema), updateUser)
+  .delete(protect, authorize("admin"), deleteUser);
+
+/*
+|--------------------------------------------------------------------------
+| USER STATUS ACTIONS (ADMIN ONLY)
+|--------------------------------------------------------------------------
+*/
 
 router.patch("/block/:id", protect, authorize("admin"), blockUser);
 
@@ -35,13 +46,9 @@ router.patch("/unblock/:id", protect, authorize("admin"), unblockUser);
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated Users
+| DASHBOARD - PATIENTS (ADMIN / DOCTOR)
 |--------------------------------------------------------------------------
 */
-
-router.get("/:id", protect, getUserById);
-
-router.put("/:id", protect, upload.single("image"), updateUser);
 
 router.get(
   "/dashboard/patients",

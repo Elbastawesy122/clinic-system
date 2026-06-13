@@ -3,10 +3,13 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { Clinic } from "@/types/clinic.types";
 import {
-    Clinic,
-} from "@/types/clinic.types";
-import { clinicFormSchema, ClinicFormValues, workingDays } from "@/schemas/clinic.schema";
+  clinicFormSchema,
+  ClinicFormValues,
+  WorkingDay,
+  workingDays,
+} from "@/schemas/clinic.schema";
 
 import { useCreateClinic } from "@/hooks/clinics/use-create-clinic";
 import { useUpdateClinic } from "@/hooks/clinics/use-update-clinic";
@@ -15,95 +18,157 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export function ClinicForm({
-    onClose,
-    mode = "create",
-    clinic,
+  onClose,
+  mode = "create",
+  clinic,
 }: {
-    onClose: () => void;
-    mode?: "create" | "edit";
-    clinic?: Clinic;
+  onClose: () => void;
+  mode?: "create" | "edit";
+  clinic?: Clinic;
 }) {
-    const create = useCreateClinic();
-    const update = useUpdateClinic();
+  const create = useCreateClinic();
+  const update = useUpdateClinic();
 
-    const form = useForm<ClinicFormValues>({
-        resolver: zodResolver(clinicFormSchema),
-        defaultValues: {
-            name: clinic?.name || "",
-            description: clinic?.description || "",
-            location: clinic?.location || "",
-            phone: clinic?.phone || "",
-            workingDays: clinic?.workingDays || [],
-            startTime: clinic?.startTime || "",
-            endTime: clinic?.endTime || "",
-        },
-    });
+  const form = useForm<ClinicFormValues>({
+    resolver: zodResolver(clinicFormSchema),
+    defaultValues: {
+      name: clinic?.name || "",
+      description: clinic?.description || "",
+      location: clinic?.location || "",
+      phone: clinic?.phone || "",
+      workingDays: clinic?.workingDays || [],
+      startTime: clinic?.startTime || "",
+      endTime: clinic?.endTime || "",
+    },
+  });
 
-    const onSubmit = (data: ClinicFormValues) => {
-        if (mode === "edit" && clinic) {
-            update.mutate(
-                { id: clinic._id, data },
-                { onSuccess: onClose }
+  const selectedDays = form.watch("workingDays") || [];
+
+  const toggleDay = (day: WorkingDay) => {
+    const exists = selectedDays.includes(day);
+
+    const updated = exists
+      ? selectedDays.filter((d) => d !== day)
+      : [...selectedDays, day];
+
+    form.setValue("workingDays", updated);
+  };
+
+  const onSubmit = (data: ClinicFormValues) => {
+    if (mode === "edit" && clinic) {
+      update.mutate(
+        { id: clinic._id, data },
+        { onSuccess: onClose }
+      );
+    } else {
+      create.mutate(data, { onSuccess: onClose });
+    }
+  };
+
+  const isPending = create.isPending || update.isPending;
+
+  return (
+    <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+
+      {/* BASIC INFO */}
+      <div className="grid gap-4">
+        <Input
+          placeholder="Clinic Name"
+          {...form.register("name")}
+          className="h-11 rounded-xl"
+        />
+
+        <Input
+          placeholder="Description"
+          {...form.register("description")}
+          className="h-11 rounded-xl"
+        />
+
+        <Input
+          placeholder="Location"
+          {...form.register("location")}
+          className="h-11 rounded-xl"
+        />
+
+        <Input
+          placeholder="Phone"
+          {...form.register("phone")}
+          className="h-11 rounded-xl"
+        />
+      </div>
+
+      {/* TIME */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-1">
+          <label className="text-sm text-muted-foreground">
+            Start Time
+          </label>
+
+          <Input
+            type="time"
+            {...form.register("startTime")}
+            className="h-11 rounded-xl cursor-pointer"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-sm text-muted-foreground">
+            End Time
+          </label>
+
+          <Input
+            type="time"
+            {...form.register("endTime")}
+            className="h-11 rounded-xl cursor-pointer"
+          />
+        </div>
+      </div>
+
+      {/* WORKING DAYS (FANCY CHIPS) */}
+      <div className="space-y-2">
+        <h2 className="text-sm font-medium text-muted-foreground">
+          Working Days
+        </h2>
+
+        <div className="flex flex-wrap gap-2">
+          {workingDays.map((day) => {
+            const isActive = selectedDays.includes(day);
+
+            return (
+              <div
+                key={day}
+                onClick={() => toggleDay(day)}
+                className={`
+                  px-3 py-2 rounded-xl border text-sm cursor-pointer
+                  transition-all select-none
+                  hover:scale-[1.05]
+                  ${
+                    isActive
+                      ? "bg-[#409D9B]/10 border-[#409D9B] text-[#409D9B]"
+                      : "border-gray-200 hover:border-gray-300"
+                  }
+                `}
+              >
+                {day}
+              </div>
             );
-        } else {
-            create.mutate(data as ClinicFormValues, {
-                onSuccess: onClose,
-            });
-        }
-    };
+          })}
+        </div>
+      </div>
 
-    const isPending = create.isPending || update.isPending;
-
-    return (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-
-            <Input placeholder="Clinic Name" {...form.register("name")} />
-            <Input placeholder="Description" {...form.register("description")} />
-            <Input placeholder="Location" {...form.register("location")} />
-            <Input placeholder="Phone" {...form.register("phone")} />
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium">
-                        Start Time
-                    </label>
-                    <Input
-                        type="time"
-                        {...form.register("startTime")}
-                    />
-                </div>
-                <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium">
-                        End Time
-                    </label>
-                    <Input
-                        type="time"
-                        {...form.register("endTime")}
-                    />
-                </div>
-            </div>
-            <div className="grid grid-cols-4 gap-2">
-                {workingDays.map((day) => (
-                    <label key={day} className="flex items-center gap-2 text-sm">
-                        <input
-                            type="checkbox"
-                            value={day}
-                            {...form.register("workingDays")}
-                        />
-                        {day}
-                    </label>
-                ))}
-            </div>
-
-            <Button className="w-full" disabled={isPending}>
-                {mode === "edit"
-                    ? isPending
-                        ? "Updating..."
-                        : "Update Clinic"
-                    : isPending
-                        ? "Creating..."
-                        : "Create Clinic"}
-            </Button>
-        </form>
-    );
+      {/* SUBMIT */}
+      <Button
+        className="w-full h-11 rounded-xl bg-[#409D9B] hover:bg-[#358a88] transition cursor-pointer"
+        disabled={isPending}
+      >
+        {mode === "edit"
+          ? isPending
+            ? "Updating..."
+            : "Update Clinic"
+          : isPending
+          ? "Creating..."
+          : "Create Clinic"}
+      </Button>
+    </form>
+  );
 }

@@ -12,60 +12,91 @@ export function ClinicCard({ clinic }: { clinic: Clinic }) {
     const [editOpen, setEditOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [viewOpen, setViewOpen] = useState(false);
+
     const toggleStatus = useToggleClinicStatus();
     const isActive = clinic?.isActive;
 
     return (
         <>
-            <Card className="p-4 space-y-3 hover:shadow-lg transition">
-                <div className="flex justify-between items-center">
-                    <h2 className="font-semibold text-lg">{clinic.name}</h2>
-                    {clinic && (
-                        <div className="flex items-center gap-2">
-                            <span className="text-xs">
-                                {isActive ? "Active" : "Inactive"}
-                            </span>
+            <Card
+                className="
+          p-5 space-y-4
+          rounded-2xl
+          border
+          hover:shadow-xl
+          transition-all
+          cursor-pointer
+          hover:-translate-y-1
+        "
+            >
+                {/* HEADER */}
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h2 className="font-bold text-lg text-gray-900">
+                            {clinic.name}
+                        </h2>
 
-                            <button
-                                type="button"
-                                aria-label={isActive ? "Deactivate clinic" : "Activate clinic"}
-                                onClick={() => toggleStatus.mutate(clinic._id)}
-                                className={`w-10 h-5 flex items-center rounded-full p-1 transition ${clinic?.isActive ? "bg-green-500" : "bg-gray-300"
-                                    }`}
-                            >
-                                <div
-                                    className={`w-4 h-4 bg-white rounded-full shadow transform transition ${isActive ? "translate-x-5" : ""
-                                        }`}
-                                />
-                            </button>
-                        </div>
-                    )}
+                        <p className="text-xs text-muted-foreground mt-1">
+                            {clinic.location}
+                        </p>
+                    </div>
+
+                    {/* STATUS TOGGLE (UNCHANGED) */}
+                    <div className="flex items-center gap-3">
+                        {clinic && (
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs">
+                                    {isActive ? "Active" : "Inactive"}
+                                </span>
+
+                                <button
+                                    type="button"
+                                    aria-label={isActive ? "Deactivate clinic" : "Activate clinic"}
+                                    onClick={() => toggleStatus.mutate(clinic._id)}
+                                    className={`w-10 h-5 flex items-center rounded-full p-1 transition ${clinic?.isActive ? "bg-green-500" : "bg-gray-300 cursor-pointer"}`}
+                                >
+                                    <div
+                                        className={`w-4 h-4 bg-white rounded-full shadow transform transition ${isActive ? "translate-x-5" : ""}`}
+                                    />
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <p className="text-sm text-gray-500 line-clamp-2">
+                {/* DESCRIPTION */}
+                <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">
                     {clinic.description}
                 </p>
 
-                <div className="flex gap-2 pt-2 flex-wrap">
-                    <Button size="sm" variant="outline" onClick={() => setViewOpen(true)}>
+                {/* ACTIONS - FULL WIDTH 3 BUTTONS */}
+                <div className="grid grid-cols-3 gap-2 pt-2">
+                    <Button
+                        onClick={() => setViewOpen(true)}
+                        variant="outline"
+                        className="w-full rounded-xl cursor-pointer"
+                    >
                         View
                     </Button>
 
-                    <Button size="sm" onClick={() => setEditOpen(true)}>
+                    <Button
+                        onClick={() => setEditOpen(true)}
+                        className="w-full rounded-xl bg-[#409D9B] hover:bg-[#358a88] cursor-pointer"
+                    >
                         Edit
                     </Button>
 
                     <Button
-                        size="sm"
-                        variant="destructive"
                         onClick={() => setDeleteOpen(true)}
+                        variant="destructive"
+                        className="w-full rounded-xl cursor-pointer"
                     >
                         Delete
                     </Button>
                 </div>
             </Card>
 
-            {/* Modals */}
+            {/* MODALS */}
             <EditClinicDialog
                 open={editOpen}
                 setOpen={setEditOpen}

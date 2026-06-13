@@ -23,6 +23,14 @@ export const registerSchema = Joi.object({
     .messages({
       "string.pattern.base": "Invalid Egyptian phone number",
     }),
+
+  role: Joi.string()
+    .valid("admin", "patient")
+    .default("patient")
+    .optional()
+    .messages({
+      "any.only": "Invalid role",
+    }),
 });
 
 export const loginSchema = Joi.object({
@@ -55,7 +63,11 @@ export const resetPasswordSchema = Joi.object({
 });
 
 export const updateMeSchema = Joi.object({
-  name: Joi.string().trim().min(3).max(50),
+  name: Joi.string().trim().min(3).max(50).messages({
+    "string.base": "Name must be a string",
+    "string.min": "Name must be at least 3 characters",
+    "string.max": "Name must not exceed 50 characters",
+  }),
 
   phone: Joi.string()
     .trim()
@@ -64,13 +76,34 @@ export const updateMeSchema = Joi.object({
       "string.pattern.base": "Invalid Egyptian phone number",
     }),
 
-  image: Joi.string().trim().uri(),
+  image: Joi.string().trim().uri().messages({
+    "string.uri": "Image must be a valid URL",
+  }),
 
-  email: Joi.forbidden(),
-  password: Joi.forbidden(),
-  role: Joi.forbidden(),
-  isVerified: Joi.forbidden(),
-  isBlocked: Joi.forbidden(),
+  /* =========================
+     FORBIDDEN FIELDS (SECURITY)
+  ========================= */
+
+  email: Joi.forbidden().messages({
+    "any.unknown": "Email cannot be updated",
+  }),
+
+  password: Joi.forbidden().messages({
+    "any.unknown": "Password cannot be updated here",
+  }),
+
+  role: Joi.forbidden().messages({
+    "any.unknown": "Role cannot be updated",
+  }),
+
+  isVerified: Joi.forbidden().messages({
+    "any.unknown": "Verification status cannot be changed",
+  }),
+
+  isBlocked: Joi.forbidden().messages({
+    "any.unknown": "Blocked status cannot be changed",
+  }),
+
   refreshToken: Joi.forbidden(),
   verificationOTP: Joi.forbidden(),
   verificationOTPExpire: Joi.forbidden(),
@@ -78,6 +111,9 @@ export const updateMeSchema = Joi.object({
   resetPasswordExpire: Joi.forbidden(),
 })
   .min(1)
+  .messages({
+    "object.min": "At least one field is required to update profile",
+  })
   .options({
     abortEarly: false,
     stripUnknown: true,

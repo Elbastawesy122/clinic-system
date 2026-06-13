@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { QueryProvider } from "@/providers/query-provider";
 import AuthProvider from "@/providers/auth-provider";
 
-const geistSans = Geist({
+const geistSans = Inter({
+  subsets: ["latin"],
   variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -28,14 +23,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased scroll-smooth`}
+      className={`${geistSans.variable} h-full antialiased scroll-smooth`}
     >
       <body className="min-h-full flex flex-col">
         <QueryProvider>
           <AuthProvider>
             {children}
           </AuthProvider>
-          <Toaster richColors position="top-right" />
+          <Toaster richColors position="top-center" />
         </QueryProvider>
       </body>
     </html>

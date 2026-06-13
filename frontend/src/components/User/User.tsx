@@ -6,6 +6,7 @@ import {
   LogOut,
   Globe,
   LogIn,
+  CalendarDays,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -96,10 +97,10 @@ export function UserDropdown() {
           </>
         )}
         <DropdownMenuGroup>
-          <Link href="/dashboard">
+          <Link href="/dashboard/appointments">
             <DropdownMenuItem className="rounded-xl cursor-pointer h-11">
-              <User />
-              Profile
+              <CalendarDays />
+              Appointments
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>

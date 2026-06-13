@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "@/schemas/auth.schema";
 import { z } from "zod";
-
+import { toast } from "sonner";
+import { useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,12 @@ import { useRegister } from "@/hooks/auth/use-register";
 type FormData = z.infer<typeof registerSchema>
 
 export function CardRegister() {
+
+  useEffect(() => {
+  toast.info(
+    "You can choose a role for testing purposes (Admin / Patient)"
+  );
+}, []);
 
   const { mutate, isPending } = useRegister();
 
@@ -116,13 +123,28 @@ export function CardRegister() {
               className="h-12 rounded-xl border-2 border-[#409D9B] outline-none"
               {...register("password")}
             />
-          </div>
-          {errors.password && (
-            <p className="text-red-500 text-sm">
-              {errors.password.message}
-            </p>
-          )}
 
+            {errors.password && (
+              <p className="text-red-500 text-sm">
+                {errors.password.message}
+              </p>
+            )}
+
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-[#409D9B] font-bold">
+              Role
+            </Label>
+
+            <select
+              {...register("role")}
+              className="h-12 w-full rounded-xl border-2 border-[#409D9B] px-3 cursor-pointer"
+            >
+              <option value="user">patient</option>
+              <option value="admin">admin</option>
+            </select>
+          </div>
           <CardFooter className="flex-col gap-3">
 
             <Button

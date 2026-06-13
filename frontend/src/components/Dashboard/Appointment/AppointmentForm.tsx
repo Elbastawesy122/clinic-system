@@ -45,7 +45,6 @@ export function AppointmentForm({
 
     const form = useForm<AppointmentFormValues>({
         resolver: zodResolver(appointmentSchema),
-
         defaultValues: {
             doctor:
                 typeof appointment?.doctor === "string"
@@ -58,14 +57,10 @@ export function AppointmentForm({
                     : appointment?.clinic?._id || "",
 
             appointmentDate:
-                appointment?.appointmentDate
-                    ?.split("T")[0] || "",
+                appointment?.appointmentDate?.split("T")[0] || "",
 
-            timeSlot:
-                appointment?.timeSlot || "",
-
-            notes:
-                appointment?.notes || "",
+            timeSlot: appointment?.timeSlot || "",
+            notes: appointment?.notes || "",
         },
     });
 
@@ -79,113 +74,136 @@ export function AppointmentForm({
         name: "clinic",
     });
 
-    const onSubmit = (
-        data: AppointmentFormValues
-    ) => {
+    const isPending = create.isPending || update.isPending;
+
+    const onSubmit = (data: AppointmentFormValues) => {
         if (mode === "edit" && appointment) {
             update.mutate(
-                {
-                    id: appointment._id,
-                    data,
-                },
-                {
-                    onSuccess: onClose,
-                }
+                { id: appointment._id, data },
+                { onSuccess: onClose }
             );
         } else {
-            create.mutate(data, {
-                onSuccess: onClose,
-            });
+            create.mutate(data, { onSuccess: onClose });
         }
-
-        console.log(data);
-        
     };
-
-    const isPending =
-        create.isPending ||
-        update.isPending;
 
     return (
         <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
+            className="space-y-6"
         >
-            <Select
-                value={doctor}
-                onValueChange={(value) =>
-                    form.setValue("doctor", value)
-                }
-            >
-                <SelectTrigger>
-                    <SelectValue placeholder="Select Doctor" />
-                </SelectTrigger>
 
-                <SelectContent>
-                    {doctors?.doctors?.map(
-                        (doctor: Doctor) => (
+            {/* Clinic */}
+            <div className="space-y-2 w-full">
+                <label className="text-sm font-medium text-muted-foreground">
+                    Clinic
+                </label>
+
+                <Select
+                    value={clinic}
+                    onValueChange={(value) =>
+                        form.setValue("clinic", value)
+                    }
+                >
+                    <SelectTrigger className="h-11 rounded-xl">
+                        <SelectValue placeholder="Select clinic" />
+                    </SelectTrigger>
+
+                    <SelectContent className="cursor-pointer">
+                        {clinics?.clinics?.map((clinic: Clinic) => (
+                            <SelectItem
+                                key={clinic._id}
+                                value={clinic._id}
+                                className="cursor-pointer"
+                            >
+                                {clinic.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+
+            {/* Doctor */}
+            <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">
+                    Doctor
+                </label>
+
+                <Select
+                    value={doctor}
+                    onValueChange={(value) =>
+                        form.setValue("doctor", value)
+                    }
+                >
+                    <SelectTrigger className="h-11 rounded-xl">
+                        <SelectValue placeholder="Select doctor" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                        {doctors?.doctors?.map((doctor: Doctor) => (
                             <SelectItem
                                 key={doctor._id}
                                 value={doctor._id}
                             >
                                 {doctor.user.name}
                             </SelectItem>
-                        )
-                    )}
-                </SelectContent>
-            </Select>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
 
-            <Select
-                value={clinic}
-                onValueChange={(value) =>
-                    form.setValue("clinic", value)
-                }
-            >
-                <SelectTrigger>
-                    <SelectValue placeholder="Select Clinic" />
-                </SelectTrigger>
+            {/* Date + Time Grid */}
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">
+                        Date
+                    </label>
 
-                <SelectContent>
-                    {clinics?.clinics?.map(
-                        (clinic: Clinic) => (
-                            <SelectItem
-                                key={clinic._id}
-                                value={clinic._id}
-                            >
-                                {clinic.name}
-                            </SelectItem>
-                        )
-                    )}
-                </SelectContent>
-            </Select>
+                    <Input
+                        type="date"
+                        {...form.register("appointmentDate")}
+                        className="h-11 rounded-xl"
+                    />
+                </div>
 
-            <Input
-                type="date"
-                {...form.register(
-                    "appointmentDate"
-                )}
-            />
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">
+                        Time
+                    </label>
 
-            <Input
-                type="time"
-                {...form.register("timeSlot")}
-            />
+                    <Input
+                        type="time"
+                        {...form.register("timeSlot")}
+                        className="h-11 rounded-xl"
+                    />
+                </div>
+            </div>
 
-            <Input
-                placeholder="Notes"
-                {...form.register("notes")}
-            />
+            {/* Notes */}
+            <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">
+                    Notes
+                </label>
 
+                <Input
+                    placeholder="Add any notes..."
+                    {...form.register("notes")}
+                    className="h-11 rounded-xl"
+                />
+            </div>
+
+            {/* Submit */}
             <Button
-                className="w-full"
+                type="submit"
                 disabled={isPending}
+                className="w-full h-11 rounded-xl bg-[#409D9B] hover:bg-[#358a88] transition"
             >
-                {mode === "edit"
-                    ? isPending
+                {isPending
+                    ? mode === "edit"
                         ? "Updating..."
-                        : "Update Appointment"
-                    : isPending
-                        ? "Creating..."
+                        : "Creating..."
+                    : mode === "edit"
+                        ? "Update Appointment"
                         : "Create Appointment"}
             </Button>
         </form>

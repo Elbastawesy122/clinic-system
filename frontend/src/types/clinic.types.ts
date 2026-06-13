@@ -1,3 +1,5 @@
+import { WorkingDay } from "@/schemas/clinic.schema";
+
 export interface Clinic {
   _id: string;
   name: string;
@@ -5,7 +7,7 @@ export interface Clinic {
   image?: string;
   location: string;
   phone: string;
-  workingDays: string[];
+  workingDays: WorkingDay[];
   startTime: string;
   endTime: string;
   isActive: boolean;

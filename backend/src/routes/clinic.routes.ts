@@ -12,19 +12,42 @@ import {
 import { protect } from "../middlewares/protect";
 import { authorize } from "../middlewares/authorize";
 import { validate } from "../middlewares/validate.middleware";
-import { createClinicSchema, updateClinicSchema } from "../validations/clinic.validation";
+
+import {
+  createClinicSchema,
+  updateClinicSchema,
+} from "../validations/clinic.validation";
 
 const router = Router();
 
-router.get("/", protect, getClinics);
+/* =========================
+   CLINICS (PUBLIC / AUTHED)
+========================= */
 
-router.get("/:id", protect, getClinicById);
+// Get all clinics + create clinic (admin only)
+router
+  .route("/")
+  .get(protect, getClinics)
+  .post(
+    protect,
+    authorize("admin"),
+    validate(createClinicSchema),
+    createClinic,
+  );
 
-router.post("/", protect, authorize("admin"), validate(createClinicSchema), createClinic);
+/* =========================
+   SINGLE CLINIC
+========================= */
 
-router.put("/:id", protect, authorize("admin"), validate(updateClinicSchema), updateClinic);
+router
+  .route("/:id")
+  .get(protect, getClinicById)
+  .put(protect, authorize("admin"), validate(updateClinicSchema), updateClinic)
+  .delete(protect, authorize("admin"), deleteClinic);
 
-router.delete("/:id", protect, authorize("admin"), deleteClinic);
+/* =========================
+   SPECIAL ACTIONS
+========================= */
 
 router.patch(
   "/toggle-status/:id",

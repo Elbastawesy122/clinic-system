@@ -9,7 +9,7 @@ import { Appointment } from "../models/appointment.model";
 export const getAllUsers = async (req: AuthRequest, res: Response) => {
   try {
     const page = Number(req.query.page) || 1;
-    const limit = 6;
+    const limit = 5;
     const search = (req.query.search as string) || "";
 
     const skip = (page - 1) * limit;
@@ -225,7 +225,7 @@ export const unblockUser = async (req: AuthRequest, res: Response) => {
 
 export const getPatients = async (req: AuthRequest, res: Response) => {
   const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 10;
+  const limit = 5;
   const search = (req.query.search as string) || "";
 
   const query = {

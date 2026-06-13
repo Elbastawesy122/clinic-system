@@ -11,9 +11,9 @@ import {
 } from "../controllers/doctor.controller";
 
 import { protect } from "../middlewares/protect";
-
 import { authorize } from "../middlewares/authorize";
 import { validate } from "../middlewares/validate.middleware";
+
 import {
   createDoctorSchema,
   updateDoctorSchema,
@@ -21,14 +21,28 @@ import {
 
 const router = Router();
 
+/* =========================
+   PUBLIC / AUTH FLOW
+========================= */
+
+// Setup password (first login flow)
 router.post("/setup-password/:token", setupDoctorPassword);
 
+/* =========================
+   DOCTOR DASHBOARD
+========================= */
+
+// Doctor's patients (admin can also access)
 router.get(
   "/my-patients",
   protect,
   authorize("doctor", "admin"),
-  getMyPatients
+  getMyPatients,
 );
+
+/* =========================
+   DOCTORS COLLECTION
+========================= */
 
 router
   .route("/")
@@ -39,6 +53,10 @@ router
     validate(createDoctorSchema),
     createDoctor,
   );
+
+/* =========================
+   SINGLE DOCTOR
+========================= */
 
 router
   .route("/:id")

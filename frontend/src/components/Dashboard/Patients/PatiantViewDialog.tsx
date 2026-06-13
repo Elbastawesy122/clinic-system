@@ -27,100 +27,96 @@ export function PatientViewDialog({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-lg">
+            <DialogContent className="sm:max-w-lg rounded-2xl">
                 <DialogHeader>
-                    <DialogTitle>
-                        Patient Details
+                    <DialogTitle className="text-xl font-bold">
+                        Patient Profile
                     </DialogTitle>
                 </DialogHeader>
 
                 {isLoading || !patient ? (
-                    <p className="text-sm text-muted-foreground">
-                        Loading...
+                    <p className="text-sm text-muted-foreground py-6">
+                        Loading patient data...
                     </p>
                 ) : (
-                    <div className="space-y-4">
-                        <div>
-                            <p className="text-sm text-muted-foreground">
-                                Name
-                            </p>
-                            <p className="font-medium">
-                                {patient.name}
-                            </p>
+                    <div className="space-y-5 text-sm">
+
+                        {/* NAME + EMAIL CARD */}
+                        <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                            <div>
+                                <p className="text-xs text-muted-foreground">Name</p>
+                                <p className="font-semibold text-base">
+                                    {patient.name}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-muted-foreground">Email</p>
+                                <p className="font-medium text-gray-700">
+                                    {patient.email}
+                                </p>
+                            </div>
                         </div>
 
-                        <div>
-                            <p className="text-sm text-muted-foreground">
-                                Email
-                            </p>
-                            <p className="font-medium">
-                                {patient.email}
-                            </p>
+                        {/* ROLE */}
+                        <div className="flex items-center justify-between bg-white border rounded-xl p-3">
+                            <span className="text-muted-foreground">Role</span>
+                            <Badge variant="secondary" className="bg-white">{patient.role}</Badge>
                         </div>
 
-                        <div>
-                            <p className="text-sm text-muted-foreground">
-                                Role
-                            </p>
-                            <Badge variant="secondary">
-                                {patient.role}
-                            </Badge>
+                        {/* STATUS GRID */}
+                        <div className="grid grid-cols-2 gap-3">
+
+                            <div className="border rounded-xl p-3 space-y-1">
+                                <p className="text-xs text-muted-foreground">
+                                    Verification
+                                </p>
+                                <Badge
+                                    variant={
+                                        patient.isVerified ? "default" : "destructive"
+                                    }
+                                    className="bg-white text-black"
+                                >
+                                    {patient.isVerified ? "Verified" : "Not Verified"}
+                                </Badge>
+                            </div>
+
+                            <div className="border rounded-xl p-3 space-y-1">
+                                <p className="text-xs text-muted-foreground">
+                                    Account
+                                </p>
+                                <Badge
+                                    variant={
+                                        patient.isBlocked ? "destructive" : "default"
+                                    }
+                                    className="bg-white text-black"
+                                >
+                                    {patient.isBlocked ? "Blocked" : "Active"}
+                                </Badge>
+                            </div>
                         </div>
 
-                        <div>
-                            <p className="text-sm text-muted-foreground">
-                                Verification Status
-                            </p>
-                            <Badge
-                                variant={
-                                    patient.isVerified
-                                        ? "default"
-                                        : "destructive"
-                                }
-                            >
-                                {patient.isVerified
-                                    ? "Verified"
-                                    : "Not Verified"}
-                            </Badge>
-                        </div>
+                        {/* DATES */}
+                        <div className="space-y-3">
 
-                        <div>
-                            <p className="text-sm text-muted-foreground">
-                                Account Status
-                            </p>
-                            <Badge
-                                variant={
-                                    patient.isBlocked
-                                        ? "destructive"
-                                        : "default"
-                                }
-                            >
-                                {patient.isBlocked
-                                    ? "Blocked"
-                                    : "Active"}
-                            </Badge>
-                        </div>
+                            <div className="flex justify-between items-center bg-white border rounded-xl p-3">
+                                <span className="text-muted-foreground text-xs">
+                                    Created
+                                </span>
+                                <span className="font-medium text-xs">
+                                    {new Date(patient.createdAt).toLocaleString()}
+                                </span>
+                            </div>
 
-                        <div>
-                            <p className="text-sm text-muted-foreground">
-                                Created At
-                            </p>
-                            <p className="font-medium">
-                                {new Date(
-                                    patient.createdAt
-                                ).toLocaleString()}
-                            </p>
-                        </div>
+                            <div className="flex justify-between items-center bg-white border rounded-xl p-3">
+                                <span className="text-muted-foreground text-xs">
+                                    Updated
+                                </span>
+                                <span className="font-medium text-xs">
+                                    {new Date(patient.updatedAt).toLocaleString()}
+                                </span>
+                            </div>
 
-                        <div>
-                            <p className="text-sm text-muted-foreground">
-                                Updated At
-                            </p>
-                            <p className="font-medium">
-                                {new Date(
-                                    patient.updatedAt
-                                ).toLocaleString()}
-                            </p>
                         </div>
                     </div>
                 )}
