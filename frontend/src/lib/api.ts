@@ -2,7 +2,7 @@ import axios from "axios";
 import { useAuthStore } from "@/store/auth-store";
 
 export const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL!,
   withCredentials: true,
 });
 
@@ -33,34 +33,29 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // لو مفيش response أو request مش موجود
     if (!error.response || !originalRequest) {
       return Promise.reject(error);
     }
 
-    // منع loop
     if (originalRequest._retry) {
       return Promise.reject(error);
     }
 
-    // لو Unauthorized
     if (error.response.status === 401) {
       originalRequest._retry = true;
 
       try {
-        const res = await axios.post("http://localhost:5000/api/auth/refresh-token", {}, { withCredentials: true });
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/refresh-token`, {}, { withCredentials: true });
 
         const newToken = res.data.accessToken;
 
         useAuthStore.getState().setAccessToken(newToken);
 
-        // إعادة إضافة التوكن
         originalRequest.headers = {
           ...originalRequest.headers,
           Authorization: `Bearer ${newToken}`,
         };
 
-        // 🔥 مهم: إعادة الطلب بشكل آمن
         return api(originalRequest);
       } catch (err) {
         useAuthStore.getState().logout();

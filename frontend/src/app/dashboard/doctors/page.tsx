@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useDoctors } from "@/hooks/doctors/useDoctors";
 import { DataTable } from "@/components/shared/DataTable";
 
-import { doctorColumns } from "@/components/Dashboard/Doctors/Doctor-columns";
+import { doctorColumns } from "@/components/Dashboard/Doctors/doctor-columns";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
