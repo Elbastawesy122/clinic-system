@@ -110,7 +110,7 @@ export const AppointmentSection = () => {
         {/* Right Side */}
         <div>
           <Image
-            src="/images/landing-page/Booking.png"
+            src="/images/Booking.png"
             alt="About Clinic"
             width={600}
             height={500}

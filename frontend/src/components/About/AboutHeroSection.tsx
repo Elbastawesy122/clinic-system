@@ -8,7 +8,7 @@ export const AboutHeroSection = () => {
         {/* Image */}
         <div className="flex justify-center">
           <Image
-            src="/images/landing-page/aboutSection.png"
+            src="/images/aboutSection.png"
             alt="Eye Care"
             width={700}
             height={700}

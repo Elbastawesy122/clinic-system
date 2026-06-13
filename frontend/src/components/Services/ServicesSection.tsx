@@ -74,7 +74,7 @@ export const ServicesSection = () => {
             </section>
             <div>
                 <Image
-                    src="/images/landing-page/ServicesSection.png"
+                    src="/images/ServicesSection.png"
                     alt="Clinic Logo"
                     width={700}
                     height={700}

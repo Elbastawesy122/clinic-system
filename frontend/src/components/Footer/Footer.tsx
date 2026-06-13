@@ -40,7 +40,7 @@ export const Footer = () => {
         {/* Logo + Description */}
         <div className="flex flex-col gap-6">
           <Image
-            src="/images/landing-page/logo.png"
+            src="/images/logo.png"
             alt="Clinic Logo"
             width={150}
             height={100}

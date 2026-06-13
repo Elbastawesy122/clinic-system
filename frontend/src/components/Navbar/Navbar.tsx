@@ -36,7 +36,7 @@ export const Navbar = () => {
             >
                 <Link href="/">
                     <Image
-                        src="/images/landing-page/logo.png"
+                        src="/images/logo.png"
                         alt="Clinic Logo"
                         width={140}
                         height={80}

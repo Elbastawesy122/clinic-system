@@ -28,7 +28,7 @@ export const HeroSection = () => {
 
         <div className="flex justify-center">
           <Image
-            src="/images/landing-page/doctor-frame.png"
+            src="/images/doctor-frame.png"
             alt="Doctor"
             width={700}
             height={700}
