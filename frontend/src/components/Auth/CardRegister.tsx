@@ -1,10 +1,10 @@
 "use client";
 
-import { FieldErrors, FieldPath, useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "@/schemas/auth.schema";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -23,9 +23,6 @@ import { RegisterFormValues } from "@/types/auth.types";
 
 export function CardRegister() {
   const { mutate, isPending } = useRegister();
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -133,19 +130,11 @@ export function CardRegister() {
             </Label>
 
             <Input
-              type={showPassword ? "text" : "password"}
+              type="password"
               placeholder="********"
-              className="h-12 rounded-xl border-2 border-[#409D9B] pr-16"
+              className="h-12 rounded-xl border-2 border-[#409D9B]"
               {...register("password")}
             />
-
-            <button
-              type="button"
-              onClick={() => setShowPassword((p) => !p)}
-              className="absolute right-3 top-10 text-xs text-gray-500"
-            >
-              {showPassword ? "Hide" : "Show"}
-            </button>
 
             {errors.password && (
               <p className="text-red-500 text-sm">
@@ -161,21 +150,11 @@ export function CardRegister() {
             </Label>
 
             <Input
-              type={showConfirmPassword ? "text" : "password"}
+              type="password"
               placeholder="********"
-              className="h-12 rounded-xl border-2 border-[#409D9B] pr-16"
+              className="h-12 rounded-xl border-2 border-[#409D9B]"
               {...register("confirmPassword")}
             />
-
-            <button
-              type="button"
-              onClick={() =>
-                setShowConfirmPassword((p) => !p)
-              }
-              className="absolute right-3 top-10 text-xs text-gray-500"
-            >
-              {showConfirmPassword ? "Hide" : "Show"}
-            </button>
 
             {errors.confirmPassword && (
               <p className="text-red-500 text-sm">

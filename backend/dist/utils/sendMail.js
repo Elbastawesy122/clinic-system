@@ -1,5 +1,8 @@
 "use strict";
 // import nodemailer from "nodemailer";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendMail = void 0;
 // export const sendMail = async (to: string, subject: string, html: string) => {
@@ -17,23 +20,48 @@ exports.sendMail = void 0;
 //     html,
 //   });
 // };
-const resend_1 = require("resend");
-let resend;
-function getResend() {
-    if (!resend) {
-        const apiKey = process.env.RESEND_API_KEY;
+////////////////////////////////////////////////////////////////////////////////////
+// import { Resend } from "resend";
+// let resend: Resend;
+// function getResend() {
+//   if (!resend) {
+//     const apiKey = process.env.RESEND_API_KEY;
+//     if (!apiKey) {
+//       throw new Error("❌ RESEND_API_KEY is missing at runtime");
+//     }
+//     resend = new Resend(apiKey);
+//   }
+//   return resend;
+// }
+// export const sendMail = async (to: string, subject: string, html: string) => {
+//   const client = getResend();
+//   return await client.emails.send({
+//     from: `Clinic System <${process.env.EMAIL_USER}>`,
+//     to,
+//     subject,
+//     html,
+//   });
+// };
+/////////////////////////////////////////////////////////////////
+const mail_1 = __importDefault(require("@sendgrid/mail"));
+let sendgrid;
+function getSendGrid() {
+    if (!sendgrid) {
+        const apiKey = process.env.SENDGRID_API_KEY;
         if (!apiKey) {
-            throw new Error("❌ RESEND_API_KEY is missing at runtime");
+            throw new Error("❌ SENDGRID_API_KEY is missing at runtime");
         }
-        resend = new resend_1.Resend(apiKey);
+        mail_1.default.setApiKey(apiKey);
+        sendgrid = mail_1.default;
     }
-    return resend;
+    return sendgrid;
 }
 const sendMail = async (to, subject, html) => {
-    const client = getResend();
-    return await client.emails.send({
-        from: `Clinic System <${process.env.EMAIL_USER}>`,
+    const client = getSendGrid();
+    return await client.send({
         to,
+        from: `Clinic System <${process.env.EMAIL_USER}>`,
+        replyTo: process.env.EMAIL_USER,
         subject,
         html,
     });
