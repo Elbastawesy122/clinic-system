@@ -7,6 +7,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,16 +21,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRegister } from "@/hooks/auth/use-register";
 
-type FormData = z.infer<typeof registerSchema>
+type FormData = z.infer<typeof registerSchema>;
 
 export function CardRegister() {
-
-  useEffect(() => {
-  toast.info(
-    "You can choose a role for testing purposes (Admin / Patient)"
-  );
-}, []);
-
   const { mutate, isPending } = useRegister();
 
   const {
@@ -40,13 +34,16 @@ export function CardRegister() {
     resolver: zodResolver(registerSchema),
   });
 
+  useEffect(() => {
+    toast.info("You can choose a role for testing purposes (Admin / Patient)");
+  }, []);
+
   const onSubmit = (data: FormData) => {
     mutate(data);
   };
 
   return (
-    <Card className="w-full border-none shadow-none ring-0 outline-none">
-
+    <Card className="w-full border-none shadow-none">
       <CardHeader className="space-y-3">
         <CardTitle className="text-4xl font-black">
           Create Account
@@ -60,13 +57,14 @@ export function CardRegister() {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
-          <div className="flex justify-between items-center gap-4">
+          {/* Name + Phone */}
+          <div className="flex gap-4">
             <div className="space-y-2 w-1/2">
               <Label className="text-[#409D9B] font-bold">Name</Label>
 
               <Input
                 placeholder="Ahmed"
-                className="h-12 rounded-xl border-2 border-[#409D9B] outline-none"
+                className="h-12 rounded-xl border-2 border-[#409D9B]"
                 {...register("name")}
               />
 
@@ -78,7 +76,7 @@ export function CardRegister() {
             </div>
 
             <div className="space-y-2 w-1/2">
-              <Label className="font-bold text-[#409D9B]">
+              <Label className="text-[#409D9B] font-bold">
                 Phone Number
               </Label>
 
@@ -90,20 +88,21 @@ export function CardRegister() {
               />
 
               {errors.phone && (
-                <p className="text-sm text-red-500">
+                <p className="text-red-500 text-sm">
                   {errors.phone.message}
                 </p>
               )}
             </div>
           </div>
 
+          {/* Email */}
           <div className="space-y-2">
             <Label className="text-[#409D9B] font-bold">Email</Label>
 
             <Input
               type="email"
               placeholder="m@example.com"
-              className="h-12 rounded-xl border-2 border-[#409D9B] outline-none"
+              className="h-12 rounded-xl border-2 border-[#409D9B]"
               {...register("email")}
             />
 
@@ -114,13 +113,16 @@ export function CardRegister() {
             )}
           </div>
 
+          {/* Password */}
           <div className="space-y-2">
-            <Label className="text-[#409D9B] font-bold">Password</Label>
+            <Label className="text-[#409D9B] font-bold">
+              Password
+            </Label>
 
             <Input
               type="password"
               placeholder="********"
-              className="h-12 rounded-xl border-2 border-[#409D9B] outline-none"
+              className="h-12 rounded-xl border-2 border-[#409D9B]"
               {...register("password")}
             />
 
@@ -129,43 +131,57 @@ export function CardRegister() {
                 {errors.password.message}
               </p>
             )}
-
           </div>
 
+          {/* Confirm Password (FIXED) */}
           <div className="space-y-2">
             <Label className="text-[#409D9B] font-bold">
-              Role
+              Confirm Password
             </Label>
+
+            <Input
+              type="password"
+              placeholder="********"
+              className="h-12 rounded-xl border-2 border-[#409D9B]"
+              {...register("confirmPassword")}
+            />
+
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm">
+                {errors.confirmPassword.message}
+              </p>
+            )}
+          </div>
+
+          {/* Role */}
+          <div className="space-y-2">
+            <Label className="text-[#409D9B] font-bold">Role</Label>
 
             <select
               {...register("role")}
               className="h-12 w-full rounded-xl border-2 border-[#409D9B] px-3 cursor-pointer"
             >
-              <option value="user">patient</option>
+              <option value="patient">patient</option>
               <option value="admin">admin</option>
             </select>
           </div>
-          <CardFooter className="flex-col gap-3">
 
+          {/* Submit */}
+          <CardFooter className="flex-col gap-3 p-0">
             <Button
               disabled={isPending}
-              className={`w-full h-12 rounded-xl bg-[#409D9B] hover:bg-[#2f7b79] text-white font-bold text-2xl ${isPending ? "cursor-not-allowed opacity-70" : "cursor-pointer"
+              className={`w-full h-12 rounded-xl bg-[#409D9B] hover:bg-[#2f7b79] text-white font-bold text-xl ${isPending ? "opacity-70 cursor-not-allowed" : ""
                 }`}
             >
               {isPending ? "Loading..." : "Create Account"}
             </Button>
 
-            <p className="text-sm text-gray-500 mt-3">
+            <p className="text-sm text-gray-500">
               Already have an account?{" "}
-
-              <Link
-                href="/user/login"
-                className="text-[#409D9B] font-semibold"
-              >
+              <Link href="/user/login" className="text-[#409D9B] font-semibold">
                 Login
               </Link>
             </p>
-
           </CardFooter>
 
         </form>

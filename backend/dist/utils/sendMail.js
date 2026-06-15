@@ -1,20 +1,38 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+// import nodemailer from "nodemailer";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendMail = void 0;
-const nodemailer_1 = __importDefault(require("nodemailer"));
+// export const sendMail = async (to: string, subject: string, html: string) => {
+//   const transporter = nodemailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//       user: process.env.EMAIL_USER,
+//       pass: process.env.EMAIL_PASS,
+//     },
+//   });
+//   await transporter.sendMail({
+//     from: process.env.EMAIL_USER,
+//     to,
+//     subject,
+//     html,
+//   });
+// };
+const resend_1 = require("resend");
+let resend;
+function getResend() {
+    if (!resend) {
+        const apiKey = process.env.RESEND_API_KEY;
+        if (!apiKey) {
+            throw new Error("❌ RESEND_API_KEY is missing at runtime");
+        }
+        resend = new resend_1.Resend(apiKey);
+    }
+    return resend;
+}
 const sendMail = async (to, subject, html) => {
-    const transporter = nodemailer_1.default.createTransport({
-        service: "gmail",
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-        },
-    });
-    await transporter.sendMail({
-        from: process.env.EMAIL_USER,
+    const client = getResend();
+    return await client.emails.send({
+        from: `Clinic System <${process.env.EMAIL_USER}>`,
         to,
         subject,
         html,
