@@ -1,11 +1,10 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { FieldErrors, FieldPath, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "@/schemas/auth.schema";
-import { z } from "zod";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -20,26 +19,40 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRegister } from "@/hooks/auth/use-register";
-
-type FormData = z.infer<typeof registerSchema>;
+import { RegisterFormValues } from "@/types/auth.types";
 
 export function CardRegister() {
   const { mutate, isPending } = useRegister();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
+  } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
   });
 
   useEffect(() => {
-    toast.info("You can choose a role for testing purposes (Admin / Patient)");
+    toast.info(
+      "You can choose a role for testing purposes (Admin / Patient)"
+    );
   }, []);
 
-  const onSubmit = (data: FormData) => {
-    mutate(data);
+  const onSubmit = (data: RegisterFormValues) => {
+    const { confirmPassword, ...apiData } = data;
+
+    mutate(apiData);
+  };
+
+  const onError = (errors: FieldErrors<FormData>) => {
+    const firstError = Object.values(errors)[0];
+
+    if (firstError && "message" in firstError) {
+      toast.error(firstError.message as string);
+    }
   };
 
   return (
@@ -55,7 +68,7 @@ export function CardRegister() {
       </CardHeader>
 
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-5">
 
           {/* Name + Phone */}
           <div className="flex gap-4">
@@ -114,17 +127,25 @@ export function CardRegister() {
           </div>
 
           {/* Password */}
-          <div className="space-y-2">
+          <div className="space-y-2 relative">
             <Label className="text-[#409D9B] font-bold">
               Password
             </Label>
 
             <Input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="********"
-              className="h-12 rounded-xl border-2 border-[#409D9B]"
+              className="h-12 rounded-xl border-2 border-[#409D9B] pr-16"
               {...register("password")}
             />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword((p) => !p)}
+              className="absolute right-3 top-10 text-xs text-gray-500"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
 
             {errors.password && (
               <p className="text-red-500 text-sm">
@@ -134,17 +155,27 @@ export function CardRegister() {
           </div>
 
           {/* Confirm Password (FIXED) */}
-          <div className="space-y-2">
+          <div className="space-y-2 relative">
             <Label className="text-[#409D9B] font-bold">
               Confirm Password
             </Label>
 
             <Input
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               placeholder="********"
-              className="h-12 rounded-xl border-2 border-[#409D9B]"
+              className="h-12 rounded-xl border-2 border-[#409D9B] pr-16"
               {...register("confirmPassword")}
             />
+
+            <button
+              type="button"
+              onClick={() =>
+                setShowConfirmPassword((p) => !p)
+              }
+              className="absolute right-3 top-10 text-xs text-gray-500"
+            >
+              {showConfirmPassword ? "Hide" : "Show"}
+            </button>
 
             {errors.confirmPassword && (
               <p className="text-red-500 text-sm">
@@ -178,7 +209,10 @@ export function CardRegister() {
 
             <p className="text-sm text-gray-500">
               Already have an account?{" "}
-              <Link href="/user/login" className="text-[#409D9B] font-semibold">
+              <Link
+                href="/user/login"
+                className="text-[#409D9B] font-semibold"
+              >
                 Login
               </Link>
             </p>
