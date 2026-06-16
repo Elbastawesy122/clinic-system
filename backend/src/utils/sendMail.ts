@@ -83,6 +83,13 @@
 import axios from "axios";
 
 export const sendMail = async (to: string, subject: string, html: string) => {
+  console.log("BREVO_API_KEY EXISTS:", !!process.env.BREVO_API_KEY);
+  if (!process.env.BREVO_API_KEY) {
+    throw new Error("BREVO_API_KEY is missing");
+  }
+  if (!process.env.EMAIL_USER) {
+    throw new Error("EMAIL_USER is missing");
+  }
   const response = await axios.post(
     "https://api.brevo.com/v3/smtp/email",
     {

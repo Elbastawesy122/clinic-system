@@ -68,6 +68,13 @@ exports.sendMail = void 0;
 // };
 const axios_1 = __importDefault(require("axios"));
 const sendMail = async (to, subject, html) => {
+    console.log("BREVO_API_KEY EXISTS:", !!process.env.BREVO_API_KEY);
+    if (!process.env.BREVO_API_KEY) {
+        throw new Error("BREVO_API_KEY is missing");
+    }
+    if (!process.env.EMAIL_USER) {
+        throw new Error("EMAIL_USER is missing");
+    }
     const response = await axios_1.default.post("https://api.brevo.com/v3/smtp/email", {
         sender: {
             name: "Clinic System",

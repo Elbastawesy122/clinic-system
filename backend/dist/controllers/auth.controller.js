@@ -100,10 +100,11 @@ const register = async (req, res) => {
         });
     }
     catch (error) {
-        console.log("EMAIL ERROR:", error);
+        console.error("BREVO DATA:", error);
         return res.status(500).json({
             message: "Server Error",
-            error,
+            brevo: error,
+            error: error,
         });
     }
 };
