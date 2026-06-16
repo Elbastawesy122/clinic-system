@@ -100,11 +100,12 @@ const register = async (req, res) => {
         });
     }
     catch (error) {
-        console.error("BREVO DATA:", error);
         return res.status(500).json({
-            message: "Server Error",
-            brevo: error,
-            error: error,
+            message: error?.message,
+            brevo: error?.response?.data,
+            status: error?.response?.status,
+            apiKeyExists: !!process.env.BREVO_API_KEY,
+            apiKeyPrefix: process.env.BREVO_API_KEY?.substring(0, 15),
         });
     }
 };
