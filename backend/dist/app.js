@@ -14,6 +14,7 @@ const appointment_routes_1 = __importDefault(require("./routes/appointment.route
 const doctor_routes_1 = __importDefault(require("./routes/doctor.routes"));
 const clinic_routes_1 = __importDefault(require("./routes/clinic.routes"));
 const dashboard_routes_1 = __importDefault(require("./routes/dashboard.routes"));
+const rateLimit_middleware_1 = require("./middlewares/rateLimit.middleware");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 /* =========================
@@ -26,7 +27,6 @@ app.use((0, helmet_1.default)());
 ========================= */
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
-// app.set("trust proxy", true);
 /* =========================
    CORS CONFIG
 ========================= */
@@ -37,7 +37,8 @@ app.use((0, cors_1.default)({
 /* =========================
    RATE LIMITING
 ========================= */
-// app.use("/api/auth", authLimiter);
+app.set("trust proxy", true);
+app.use("/api/auth", rateLimit_middleware_1.authLimiter);
 /* =========================
    ROUTES
 ========================= */
