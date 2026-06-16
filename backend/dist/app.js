@@ -17,6 +17,7 @@ const dashboard_routes_1 = __importDefault(require("./routes/dashboard.routes"))
 const rateLimit_middleware_1 = require("./middlewares/rateLimit.middleware");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
+app.set("trust proxy", 1);
 /* =========================
    SECURITY MIDDLEWARES
 ========================= */
@@ -37,7 +38,6 @@ app.use((0, cors_1.default)({
 /* =========================
    RATE LIMITING
 ========================= */
-app.set("trust proxy", true);
 app.use("/api/auth", rateLimit_middleware_1.authLimiter);
 /* =========================
    ROUTES

@@ -18,6 +18,8 @@ dotenv.config();
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 /* =========================
    SECURITY MIDDLEWARES
 ========================= */
@@ -43,7 +45,6 @@ app.use(
 /* =========================
    RATE LIMITING
 ========================= */
-app.set("trust proxy", true);
 app.use("/api/auth", authLimiter);
 
 /* =========================
