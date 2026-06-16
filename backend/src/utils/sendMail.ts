@@ -49,33 +49,62 @@
 // };
 /////////////////////////////////////////////////////////////////
 
-import sgMail from "@sendgrid/mail";
+// import sgMail from "@sendgrid/mail";
 
-let sendgrid: typeof sgMail;
+// let sendgrid: typeof sgMail;
 
-function getSendGrid() {
-  if (!sendgrid) {
-    const apiKey = process.env.SENDGRID_API_KEY;
+// function getSendGrid() {
+//   if (!sendgrid) {
+//     const apiKey = process.env.SENDGRID_API_KEY;
 
-    if (!apiKey) {
-      throw new Error("❌ SENDGRID_API_KEY is missing at runtime");
-    }
+//     if (!apiKey) {
+//       throw new Error("❌ SENDGRID_API_KEY is missing at runtime");
+//     }
 
-    sgMail.setApiKey(apiKey);
-    sendgrid = sgMail;
-  }
+//     sgMail.setApiKey(apiKey);
+//     sendgrid = sgMail;
+//   }
 
-  return sendgrid;
-}
+//   return sendgrid;
+// }
+
+// export const sendMail = async (to: string, subject: string, html: string) => {
+//   const client = getSendGrid();
+
+//   return await client.send({
+//     to,
+//     from: `Clinic System <${process.env.EMAIL_USER}>`,
+//     replyTo: process.env.EMAIL_USER,
+//     subject,
+//     html,
+//   });
+// };
+
+import axios from "axios";
 
 export const sendMail = async (to: string, subject: string, html: string) => {
-  const client = getSendGrid();
+  const response = await axios.post(
+    "https://api.brevo.com/v3/smtp/email",
+    {
+      sender: {
+        name: "Clinic System",
+        email: process.env.EMAIL_USER,
+      },
+      to: [
+        {
+          email: to,
+        },
+      ],
+      subject,
+      htmlContent: html,
+    },
+    {
+      headers: {
+        "api-key": process.env.BREVO_API_KEY,
+        "Content-Type": "application/json",
+      },
+    },
+  );
 
-  return await client.send({
-    to,
-    from: `Clinic System <${process.env.EMAIL_USER}>`,
-    replyTo: process.env.EMAIL_USER,
-    subject,
-    html,
-  });
+  return response.data;
 };

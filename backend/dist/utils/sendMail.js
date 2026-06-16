@@ -43,27 +43,49 @@ exports.sendMail = void 0;
 //   });
 // };
 /////////////////////////////////////////////////////////////////
-const mail_1 = __importDefault(require("@sendgrid/mail"));
-let sendgrid;
-function getSendGrid() {
-    if (!sendgrid) {
-        const apiKey = process.env.SENDGRID_API_KEY;
-        if (!apiKey) {
-            throw new Error("❌ SENDGRID_API_KEY is missing at runtime");
-        }
-        mail_1.default.setApiKey(apiKey);
-        sendgrid = mail_1.default;
-    }
-    return sendgrid;
-}
+// import sgMail from "@sendgrid/mail";
+// let sendgrid: typeof sgMail;
+// function getSendGrid() {
+//   if (!sendgrid) {
+//     const apiKey = process.env.SENDGRID_API_KEY;
+//     if (!apiKey) {
+//       throw new Error("❌ SENDGRID_API_KEY is missing at runtime");
+//     }
+//     sgMail.setApiKey(apiKey);
+//     sendgrid = sgMail;
+//   }
+//   return sendgrid;
+// }
+// export const sendMail = async (to: string, subject: string, html: string) => {
+//   const client = getSendGrid();
+//   return await client.send({
+//     to,
+//     from: `Clinic System <${process.env.EMAIL_USER}>`,
+//     replyTo: process.env.EMAIL_USER,
+//     subject,
+//     html,
+//   });
+// };
+const axios_1 = __importDefault(require("axios"));
 const sendMail = async (to, subject, html) => {
-    const client = getSendGrid();
-    return await client.send({
-        to,
-        from: `Clinic System <${process.env.EMAIL_USER}>`,
-        replyTo: process.env.EMAIL_USER,
+    const response = await axios_1.default.post("https://api.brevo.com/v3/smtp/email", {
+        sender: {
+            name: "Clinic System",
+            email: process.env.EMAIL_USER,
+        },
+        to: [
+            {
+                email: to,
+            },
+        ],
         subject,
-        html,
+        htmlContent: html,
+    }, {
+        headers: {
+            "api-key": process.env.BREVO_API_KEY,
+            "Content-Type": "application/json",
+        },
     });
+    return response.data;
 };
 exports.sendMail = sendMail;
