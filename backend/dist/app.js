@@ -27,6 +27,7 @@ app.use((0, helmet_1.default)());
 ========================= */
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
+app.set("trust proxy", true);
 /* =========================
    CORS CONFIG
 ========================= */
