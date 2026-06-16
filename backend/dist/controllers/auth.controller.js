@@ -193,8 +193,8 @@ const login = async (req, res) => {
     await user.save();
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: true,
+        sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     const userData = await user_model_1.User.findById(user._id).select("-password -refreshToken");
