@@ -4,7 +4,9 @@ import { AuthResponse, ForgotPasswordDto, LoginDto, RegisterDto, ResetPasswordDt
 
 export const registerApi = (data: RegisterDto) => api.post("/auth/register", data);
 
-export const loginApi = (data: LoginDto) => api.post("/auth/login", data);
+export const loginApi = (data: LoginDto) => api.post("/auth/login", data, {
+  withCredentials: true,
+});
 
 export const verifyEmailApi = (data: VerifyEmailDto) => api.post("/auth/verify-email", data);
 

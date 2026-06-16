@@ -43,7 +43,7 @@ app.use(
 /* =========================
    RATE LIMITING
 ========================= */
-// app.use("/api/auth", authLimiter);
+app.use("/api/auth", authLimiter);
 
 /* =========================
    ROUTES

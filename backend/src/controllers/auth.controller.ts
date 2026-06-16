@@ -118,21 +118,46 @@ export const register = async (req: Request, res: Response) => {
       email,
       "Verify Your Email",
       `
-        <h2>Your OTP Code</h2>
-        <h1>${otp}</h1>
-      `,
+        <div style="font-family: Arial, sans-serif; background:#f4f6f8; padding:40px;">
+          
+          <div style="max-width:480px; margin:auto; background:white; padding:30px; border-radius:12px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.08);">
+            
+            <h2 style="color:#409D9B; margin-bottom:10px;">
+              Clinic System Verification
+            </h2>
+
+            <p style="color:#555; font-size:14px; margin-bottom:25px;">
+              Use the OTP below to verify your email address
+            </p>
+
+            <div style="font-size:32px; letter-spacing:6px; font-weight:bold; color:#111; background:#f0fdfa; padding:15px 20px; border-radius:10px; display:inline-block;">
+              ${otp}
+            </div>
+
+            <p style="margin-top:25px; font-size:12px; color:#888;">
+              This code will expire in 10 minutes. If you didn’t request this, ignore this email.
+            </p>
+
+            <hr style="margin:25px 0; border:none; border-top:1px solid #eee;" />
+
+            <p style="font-size:12px; color:#aaa;">
+              © ${new Date().getFullYear()} Clinic System. All rights reserved.
+            </p>
+
+          </div> 
+        </div>
+     `,
     );
 
     res.status(201).json({
       message: "Account created successfully",
     });
-  } catch (error: any) {
+  } catch (error) {
+    console.log("EMAIL ERROR:", error);
+
     return res.status(500).json({
-      message: error?.message,
-      brevo: error?.response?.data,
-      status: error?.response?.status,
-      apiKeyExists: !!process.env.BREVO_API_KEY,
-      apiKeyPrefix: process.env.BREVO_API_KEY?.substring(0, 15),
+      message: "Server Error",
+      error,
     });
   }
 };
@@ -216,7 +241,7 @@ export const login = async (req: Request, res: Response) => {
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
