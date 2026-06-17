@@ -29,7 +29,7 @@ export function DeleteClinicDialog({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
+            <DialogContent className="sm:max-w-lg max-w-2xl rounded-2xl">
                 <DialogHeader>
                     <DialogTitle>Delete Clinic?</DialogTitle>
                 </DialogHeader>

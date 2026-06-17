@@ -18,6 +18,8 @@ import { useClinics } from "@/hooks/clinics/use-clinics";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+import { FieldErrors } from "react-hook-form";
+
 import {
   Select,
   SelectContent,
@@ -28,6 +30,7 @@ import {
 
 import { Clinic } from "@/types/clinic.types";
 import { WorkingDay, workingDays } from "@/schemas/clinic.schema";
+import { toast } from "sonner";
 
 export function DoctorForm({
   onClose,
@@ -97,10 +100,22 @@ export function DoctorForm({
     }
   };
 
+  const showErrors = (errors: FieldErrors<DoctorFormValues>) => {
+    Object.values(errors).forEach((err) => {
+      if (err?.message) {
+        toast.error(err.message);
+      }
+    });
+  };
+
+  const onInvalid = (errors: FieldErrors<DoctorFormValues>) => {
+    showErrors(errors);
+  };
+
   const isPending = create.isPending || update.isPending;
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-4">
 
       {/* BASIC INFO */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -129,9 +144,9 @@ export function DoctorForm({
       </Select>
 
       {/* MEDICAL INFO */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <Input className="rounded-xl" placeholder="Specialization" {...form.register("specialization")} />
+      <Input className="rounded-xl" placeholder="Specialization" {...form.register("specialization")} />
 
+      <div className="flex justify-between items-center gap-3">
         <Input
           className="rounded-xl"
           type="number"
@@ -147,9 +162,9 @@ export function DoctorForm({
           placeholder="Fees"
           {...form.register("fees", { valueAsNumber: true })}
         />
-
-        <Input className="rounded-xl md:col-span-2" placeholder="Bio" {...form.register("bio")} />
       </div>
+
+      <Input className="rounded-xl md:col-span-2" placeholder="Bio" {...form.register("bio")} />
 
       {/* TIME */}
       <div className="grid grid-cols-2 gap-3">
@@ -181,10 +196,9 @@ export function DoctorForm({
                 onClick={() => toggleDay(day)}
                 className={`
                   px-3 py-1 rounded-full text-sm border transition cursor-pointer
-                  ${
-                    active
-                      ? "bg-[#409D9B] text-white border-[#409D9B]"
-                      : "bg-white text-gray-600 hover:border-[#409D9B]"
+                  ${active
+                    ? "bg-[#409D9B] text-white border-[#409D9B]"
+                    : "bg-white text-gray-600 hover:border-[#409D9B]"
                   }
                 `}
               >
@@ -205,8 +219,8 @@ export function DoctorForm({
             ? "Updating..."
             : "Update Doctor"
           : isPending
-          ? "Creating..."
-          : "Create Doctor"}
+            ? "Creating..."
+            : "Create Doctor"}
       </Button>
     </form>
   );

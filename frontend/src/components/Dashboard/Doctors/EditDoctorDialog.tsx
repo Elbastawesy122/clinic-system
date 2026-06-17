@@ -23,7 +23,7 @@ export function EditDoctorDialog({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="sm:max-w-lg max-w-2xl rounded-2xl">
                 <DialogHeader>
                     <DialogTitle>Edit Doctor</DialogTitle>
                 </DialogHeader>

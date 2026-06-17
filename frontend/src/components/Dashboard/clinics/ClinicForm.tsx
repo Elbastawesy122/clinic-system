@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Clinic } from "@/types/clinic.types";
@@ -16,6 +16,7 @@ import { useUpdateClinic } from "@/hooks/clinics/use-update-clinic";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export function ClinicForm({
   onClose,
@@ -65,10 +66,22 @@ export function ClinicForm({
     }
   };
 
+  const showErrors = (errors: FieldErrors<ClinicFormValues>) => {
+    Object.values(errors).forEach((err) => {
+      if (err?.message) {
+        toast.error(err.message);
+      }
+    });
+  };
+
+  const onInvalid = (errors: FieldErrors<ClinicFormValues>) => {
+    showErrors(errors);
+  };
+
   const isPending = create.isPending || update.isPending;
 
   return (
-    <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+    <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
 
       {/* BASIC INFO */}
       <div className="grid gap-4">
@@ -142,10 +155,9 @@ export function ClinicForm({
                   px-3 py-2 rounded-xl border text-sm cursor-pointer
                   transition-all select-none
                   hover:scale-[1.05]
-                  ${
-                    isActive
-                      ? "bg-[#409D9B]/10 border-[#409D9B] text-[#409D9B]"
-                      : "border-gray-200 hover:border-gray-300"
+                  ${isActive
+                    ? "bg-[#409D9B]/10 border-[#409D9B] text-[#409D9B]"
+                    : "border-gray-200 hover:border-gray-300"
                   }
                 `}
               >
@@ -166,8 +178,8 @@ export function ClinicForm({
             ? "Updating..."
             : "Update Clinic"
           : isPending
-          ? "Creating..."
-          : "Create Clinic"}
+            ? "Creating..."
+            : "Create Clinic"}
       </Button>
     </form>
   );

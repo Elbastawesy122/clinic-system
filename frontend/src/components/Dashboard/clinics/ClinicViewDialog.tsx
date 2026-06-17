@@ -20,7 +20,7 @@ export function ClinicViewDialog({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="rounded-2xl max-w-md">
+            <DialogContent className="sm:max-w-lg max-w-2xl rounded-2xl">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-bold">
                         {clinic.name}

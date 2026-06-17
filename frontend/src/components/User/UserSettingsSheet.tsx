@@ -169,7 +169,7 @@ export const UserSettingsSheet = () => {
                         <Link href="/user/forgot-password">
                             <Button
                                 variant="outline"
-                                className="w-full h-11 rounded-xl cursor-pointer">
+                                className="w-full h-11 rounded-xl cursor-pointer mb-3">
                                 Change Password
                             </Button>
                         </Link>

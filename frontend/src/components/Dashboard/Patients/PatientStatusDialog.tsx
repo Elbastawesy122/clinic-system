@@ -46,7 +46,7 @@ export function PatientStatusDialog({
             open={open}
             onOpenChange={setOpen}
         >
-            <DialogContent>
+            <DialogContent className="sm:max-w-lg max-w-2xl rounded-2xl">
                 <DialogHeader>
                     <DialogTitle>
                         {isBlock
