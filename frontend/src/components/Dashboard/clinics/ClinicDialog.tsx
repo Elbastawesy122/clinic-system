@@ -12,7 +12,7 @@ import { ClinicForm } from "./ClinicForm";
 export function ClinicDialog({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-lg max-w-2xl rounded-2xl">
+            <DialogContent className="rounded-2xl">
                 <DialogHeader>
                     <DialogTitle>Create Clinic</DialogTitle>
                 </DialogHeader>

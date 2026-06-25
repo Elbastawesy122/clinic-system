@@ -53,7 +53,7 @@ export function CardRegister() {
   };
 
   return (
-    <Card className="w-full border-none shadow-none">
+    <Card className="w-full border-none shadow-none ring-0 outline-none">
       <CardHeader className="space-y-3">
         <CardTitle className="text-4xl font-black">
           Create Account

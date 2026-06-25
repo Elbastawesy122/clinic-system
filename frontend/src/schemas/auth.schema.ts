@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-const egyptianPhoneRegex = /^(\+20|0)?1[0125][0-9]{8}$/;
+const internationalPhoneRegex = /^\+[1-9]\d{1,14}$/;
 
 export const registerSchema = z
   .object({
     name: z.string().trim().min(2, "Name must be at least 2 characters").max(50, "Name is too long"),
     email: z.string().trim().email("Invalid email format"),
-    phone: z.string().trim().regex(egyptianPhoneRegex, "Invalid Egyptian phone number").optional().or(z.literal("")),
+    phone: z.string().trim().regex(internationalPhoneRegex, "Phone number must be in international format (e.g. +201012345678)").optional().or(z.literal("")),
     password: z.string().min(6, "Password must be at least 6 characters").max(100, "Password is too long"),
     confirmPassword: z.string().min(6, "Confirm password is required"),
     role: z.enum(["admin", "patient"]),
@@ -14,7 +14,7 @@ export const registerSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
-  })
+  });
 
 export const loginSchema = z.object({
   email: z.string().trim().email("Invalid email format"),

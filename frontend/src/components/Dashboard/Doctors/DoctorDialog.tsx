@@ -21,7 +21,7 @@ export function DoctorDialog({
 }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-lg max-w-2xl rounded-2xl">
+            <DialogContent className="rounded-2xl">
                 <DialogHeader>
                     <DialogTitle>
                         {doctor ? "Edit Doctor" : "Create Doctor"}

@@ -20,10 +20,10 @@ exports.registerSchema = joi_1.default.object({
         "string.empty": "Password is required",
     }),
     phone: joi_1.default.string()
-        .pattern(/^01[0125][0-9]{8}$/)
+        .pattern(/^\+[1-9]\d{1,14}$/)
         .optional()
         .messages({
-        "string.pattern.base": "Invalid Egyptian phone number",
+        "string.pattern.base": "Phone number must be in international format (e.g. +201012345678)",
     }),
     role: joi_1.default.string()
         .valid("admin", "patient")
